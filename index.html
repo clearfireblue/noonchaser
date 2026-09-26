@@ -3,24 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>NoonChaser</title>
-<meta name="description" content="A solo campaign game of a wounded company riding against the dark. Roll d20s, plan quests, heal at the hold, and keep your riders alive. Free, runs in your browser.">
-<meta name="theme-color" content="#11140e">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%2311140e'/%3E%3Cg fill='none' stroke='%23e2b04a' stroke-width='2.5' stroke-linecap='round'%3E%3Ccircle cx='32' cy='32' r='11.5'/%3E%3Cpath d='M48 32L59 32M45.9 40L51 43M40 45.9L43 51M32 48L32 59M24 45.9L21 51M18.1 40L13 43M16 32L5 32M18.1 24L13 21M24 18.1L21 13M32 16L32 5M40 18.1L43 13M45.9 24L51 21M32 21V42M27.5 35H36.5'/%3E%3C/g%3E%3C/svg%3E">
-<link rel="canonical" href="https://clearfireblue.github.io/noonchaser/">
-<meta property="og:type" content="website">
-<meta property="og:site_name" content="NoonChaser">
-<meta property="og:title" content="NoonChaser: Why do you ride against the dark?">
-<meta property="og:description" content="A solo campaign game of a wounded company riding against the dark. Roll d20s, plan quests, heal at the hold, and keep your riders alive. Free, runs in your browser.">
-<meta property="og:url" content="https://clearfireblue.github.io/noonchaser/">
-<meta property="og:image" content="https://clearfireblue.github.io/noonchaser/og-image.png">
-<meta property="og:image:width" content="1200">
-<meta property="og:image:height" content="630">
-<meta property="og:image:alt" content="NoonChaser: a sun crest over the title on a dark green field">
-<meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="NoonChaser">
-<meta name="twitter:description" content="A solo campaign game of a wounded company riding against the dark. Roll d20s, plan quests, heal at the hold, and keep your riders alive. Free, runs in your browser.">
-<meta name="twitter:image" content="https://clearfireblue.github.io/noonchaser/og-image.png">
+<title>Noonchaser 1.4</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=IM+Fell+English:ital@0;1&family=IM+Fell+English+SC&family=Alegreya+Sans:wght@400;500;700&display=swap" rel="stylesheet">
@@ -42,6 +25,9 @@ h1{font-family:"IM Fell English SC","IM Fell English",Georgia,serif;font-size:cl
 .title-input{font:inherit;font-family:"IM Fell English",Georgia,serif;font-size:22px;color:var(--ink);background:transparent;border:1px solid transparent;border-bottom-color:var(--line);border-radius:3px;padding:2px 6px;min-width:0;width:min(320px,100%)}
 .title-input:hover{border-color:var(--line)}
 .title-input:focus{background:var(--field);border-color:var(--tallow)}
+input.snm{font:inherit;font-size:15px;color:var(--ink);background:transparent;border:1px solid transparent;border-bottom-color:var(--line);border-radius:3px;padding:1px 4px;min-height:auto;width:auto;max-width:170px}
+input.snm:hover{border-color:var(--line)}
+input.snm:focus{background:var(--field);border-color:var(--tallow)}
 .ledger{display:flex;gap:22px;font-size:15px;color:var(--muted)}
 .ledger b{display:block;font-family:"IM Fell English",Georgia,serif;font-weight:400;font-size:26px;color:var(--ink);line-height:1.1}
 .brand{display:flex;align-items:center;gap:14px}
@@ -187,7 +173,7 @@ th[aria-sort="ascending"] .sh,th[aria-sort="descending"] .sh{color:var(--ink)}
 <div class="wrap">
   <header class="top">
     <div>
-      <div class="brand"><svg class="crest" viewBox="0 0 64 64" aria-hidden="true" focusable="false"><g fill="none" stroke="var(--tallow)" stroke-width="2" stroke-linecap="round"><circle cx="32" cy="32" r="11.5"/><path d="M48 32L59 32M45.9 40L51 43M40 45.9L43 51M32 48L32 59M24 45.9L21 51M18.1 40L13 43M16 32L5 32M18.1 24L13 21M24 18.1L21 13M32 16L32 5M40 18.1L43 13M45.9 24L51 21"/><path d="M32 21V42M27.5 35H36.5"/></g></svg><h1>NoonChaser</h1></div>
+      <div class="brand"><svg class="crest" viewBox="0 0 64 64" aria-hidden="true" focusable="false"><g fill="none" stroke="var(--tallow)" stroke-width="2" stroke-linecap="round"><circle cx="32" cy="32" r="11.5"/><path d="M48 32L59 32M45.9 40L51 43M40 45.9L43 51M32 48L32 59M24 45.9L21 51M18.1 40L13 43M16 32L5 32M18.1 24L13 21M24 18.1L21 13M32 16L32 5M40 18.1L43 13M45.9 24L51 21"/><path d="M32 21V42M27.5 35H36.5"/></g></svg><h1>Noonchaser</h1></div>
       <p class="ask">Why do you ride against the dark?</p>
       <div class="camp"><label for="titleInput">Campaign</label><input class="title-input" id="titleInput" maxlength="40" value="The Sunless March"></div>
     </div>
@@ -203,6 +189,7 @@ th[aria-sort="ascending"] .sh,th[aria-sort="descending"] .sh{color:var(--ink)}
 /* ---------- constants ---------- */
 const KEY='noonchaser-v2';
 const DEFAULT_TITLE='The Sunless March';
+const LORE=['Annum 447, the final heir to the line of Ulrich, the servant-king of all, perished.','Mighty provinces, bound together by honor and oaths, became fractured and dissolved by dishonor and betrayal.','Darkness descended upon the lands and an age of ignorance, isolation, fear, and war stripped cathedrals of their dignity, knights of their chivalry, and lords of their duty.','You are a NoonChaser \u2014 one who chooses to ride against the dark, and seek the last bit of light in a land filled with darkness.'];
 const WOUNDS=['Hale','Bloodied','Maimed','Slain'];
 const RANKS=['Squire','Yeoman','Man-at-Arms','Serjeant','Knight','Banneret','Castellan','Baron','Earl','Marshal','Champion'];
 const MAX_RANK=RANKS.length-1;
@@ -279,8 +266,8 @@ const ACTS={
 };
 const ASTATS={train:['sta','mig','tec'],carouse:['ins','eti']};
 const EVENTS=[
-  {w:10,n:'A quiet week',fx(out){out.push('Nothing needs doing that a good night\u2019s sleep won\u2019t fix.');}},
-  {w:8,n:'Fireside boasting',fx(out){out.push('Someone tells the story of an old fight again, bigger every time.');}},
+  {w:4,n:'A quiet week',fx(out){out.push('Nothing needs doing that a good night\u2019s sleep won\u2019t fix.');}},
+  {w:4,n:'Fireside boasting',fx(out){out.push('Someone tells the story of an old fight again, bigger every time.');}},
   {w:5,n:'A stray dog',fx(out){out.push('A stray dog adopts the company. No one has the heart to send it off.');}},
   {w:5,n:'A newcomer lingers',fx(out){out.push('Someone lingers by the gate, sizing the company up. Nothing comes of it, yet.');}},
   {w:5,n:'A scuffle',fx(out){out.push('Old grudges flare up over nothing much. It blows over by morning.');}},
@@ -332,6 +319,66 @@ const EVENTS=[
     const mb=pick(L),x=roll20(clamp(mb.st.eti,1,19));
     if(x.ok){mb.rank++;out.push('An old debt is called in on '+esc(mb.name)+'\u2019s behalf (rolled '+x.die+' vs '+x.tgt+'). Raised to '+RANKS[mb.rank]+(mb.rank%2===0?', and a boon besides.':'.'));}
     else out.push('An old debt is called in on '+esc(mb.name)+'\u2019s behalf (rolled '+x.die+' vs '+x.tgt+'), but it comes to nothing.');
+  }},
+  {w:5,n:'Word of a hideout',fx(out){
+    const p=eventProvince(true);
+    if(!p){out.push('There\u2019s talk of a den somewhere, but no map yet to mark it on.');return;}
+    const l=newLocation('hide');p.locations.push(l);
+    out.push('Word comes of '+esc(l.name)+' taking shape near '+esc(p.name)+'.');
+  }},
+  {w:5,n:'Smoke on the horizon',fx(out){
+    const p=eventProvince(true);
+    if(!p){out.push('Someone swears they saw smoke, but there\u2019s no map yet to mark it on.');return;}
+    const l=newLocation('camp');p.locations.push(l);
+    out.push('Smoke is spotted rising from '+esc(l.name)+', near '+esc(p.name)+'.');
+  }},
+  {w:5,n:'Strange tracks',fx(out){
+    const p=eventProvince(false);
+    if(!p){out.push('Someone mentions strange tracks, but there\u2019s no map yet to mark them on.');return;}
+    const l=newLocation('lair');p.locations.push(l);
+    out.push('Strange tracks lead the hunters back to '+esc(l.name)+' in '+esc(p.name)+', and they turn around.');
+  }},
+  {w:5,n:'A collapsed cellar',fx(out){
+    const p=eventProvince(false);
+    if(!p){out.push('The ground shifts somewhere, but there\u2019s no map yet to mark it on.');return;}
+    const l=newLocation('delve');p.locations.push(l);
+    out.push('A cellar floor gives way in '+esc(p.name)+', opening onto '+esc(l.name)+'.');
+  }},
+  {w:5,n:'Whispers of ruins',fx(out){
+    const p=eventProvince(false);
+    if(!p){out.push('Old-timers mutter about a place no one can place, but there\u2019s no map yet to mark it on.');return;}
+    const l=newLocation('unexp');p.locations.push(l);
+    out.push('Old-timers mutter about '+esc(l.name)+', somewhere out in '+esc(p.name)+'.');
+  }},
+  {w:5,n:'Raiders regroup',fx(out){
+    const p=eventProvince(false);
+    if(!p){out.push('Word is the enemy is digging in somewhere, but there\u2019s no map yet to mark it on.');return;}
+    const l=newLocation('camp');p.locations.push(l);
+    out.push('The enemy pulls back to lick their wounds and dig in at '+esc(l.name)+', right in '+esc(p.name)+'.');
+  }},
+  {w:5,n:'A den goes quiet',fx(out){
+    const p=eventProvince(false);
+    if(!p){out.push('The roads have gone quiet somewhere, but there\u2019s no map yet to mark it on.');return;}
+    const l=newLocation('hide');p.locations.push(l);
+    out.push('The roads through '+esc(p.name)+' go quiet \u2014 something has gone to ground at '+esc(l.name)+'.');
+  }},
+  {w:5,n:'Beast sign',fx(out){
+    const p=eventProvince(true);
+    if(!p){out.push('Herders report kills somewhere, but there\u2019s no map yet to mark it on.');return;}
+    const l=newLocation('lair');p.locations.push(l);
+    out.push('Herders near '+esc(p.name)+' report kills; something has moved into '+esc(l.name)+'.');
+  }},
+  {w:5,n:'An old shaft reopens',fx(out){
+    const p=eventProvince(true);
+    if(!p){out.push('The rains open something up somewhere, but there\u2019s no map yet to mark it on.');return;}
+    const l=newLocation('delve');p.locations.push(l);
+    out.push('Hard rain near '+esc(p.name)+' opens up '+esc(l.name)+', unmarked on any map.');
+  }},
+  {w:5,n:'A place uncharted',fx(out){
+    const p=eventProvince(true);
+    if(!p){out.push('A pedlar mentions a place off the map, but there\u2019s no map yet to mark it on.');return;}
+    const l=newLocation('unexp');p.locations.push(l);
+    out.push('A pedlar mentions '+esc(l.name)+', not far from '+esc(p.name)+' and on no map they\u2019ve seen.');
   }}
 ];
 function rollEvent(){const ev=wpick(EVENTS),out=[];ev.fx(out);return {n:ev.n,lines:out};}
@@ -519,7 +566,7 @@ function newSettlement(sizeAdj){
   return {id:uid(),kind:'settle',name:settlementName(),settleType:settleTypeRoll(sizeAdj||0),size:size,hidden:false,cleared:false,notes:''};
 }
 function newLocation(kind,name,hidden){
-  return {id:uid(),kind:kind,name:name||locName(kind),settleType:null,hidden:!!hidden,cleared:false,notes:''};
+  return {id:uid(),kind:kind,name:name||locName(kind),settleType:null,hidden:!!hidden,cleared:false,notes:'',depth:kind==='delve'?1:undefined,final:kind==='delve'?null:undefined};
 }
 function ensureGrudgeFloor(grudges,faction,lvl){
   const g=grudges.filter(x=>x.faction===faction)[0];
@@ -568,11 +615,6 @@ function removeProvince(id){
   if(S.destProv===id)S.destProv='';
   S.targetLoc='';
 }
-function addLocation(provId,kind,hidden){
-  const p=S.map.provinces.find(x=>x.id===provId);
-  if(!p||!KINDS[kind])return;
-  p.locations.push(newLocation(kind,null,hidden));
-}
 function removeLocation(provId,locId){
   const p=S.map.provinces.find(x=>x.id===provId);
   if(p)p.locations=p.locations.filter(l=>l.id!==locId);
@@ -603,9 +645,24 @@ function surveyOne(){
   if(!S.pos)S.pos=prov.id;
 }
 function curProvince(){return S.pos?(S.map.provinces.find(p=>p.id===S.pos)||null):null;}
+function eventProvince(preferAdj){
+  const cur=curProvince();
+  if(!cur)return S.map.provinces.length?pick(S.map.provinces):null;
+  if(!preferAdj)return cur;
+  const adjP=S.map.provinces.filter(p=>(cur.adj||[]).indexOf(p.id)>=0);
+  return adjP.length?pick(adjP):cur;
+}
 function curSettlement(){const p=curProvince();return p?(p.locations.find(l=>l.kind==='settle')||null):null;}
 function settlePerk(){const s=curSettlement();return s?SETTLE_TYPES[s.settleType]:null;}
-function perkBonus(act){const p=settlePerk();return (p&&p.act===act)?p.bonus:0;}
+function curDelvePerks(){
+  const p=curProvince();
+  return p?p.locations.filter(l=>l.kind==='delve'&&l.cleared&&l.perk).map(l=>l.perk):[];
+}
+function perkBonus(act){
+  let b=0;const sp=settlePerk();if(sp&&sp.act===act)b+=sp.bonus;
+  curDelvePerks().forEach(pk=>{if(pk.act===act)b+=pk.bonus;});
+  return b;
+}
 function perkBlurb(p){
   const map={forage:'Foraging is easier here.',scout:'Scouting is easier here.',train:'Training is easier here.',outfit:'The armourer here is generous.',carouse:'Good company makes carousing easier.',pray:'A place suited to prayer.'};
   let s=map[p.act]||'';
@@ -683,7 +740,7 @@ function newMember(roster){
 }
 function fresh(){
   const roster=[];for(let i=0;i<4;i++)roster.push(newMember(roster));
-  return {v:2,title:DEFAULT_TITLE,roster:roster,fallen:[],grudges:[],history:[],week:1,done:0,phase:'ready',encN:4,bonus:0,kit:{bandage:2,flare:1,stim:1},report:[],m:null,view:'setup',ui:{mode:'cards',open:{},sort:{key:'',dir:1}},mtype:'explore',kind:'unexp',threat:'Outlaws',legs:4,contracts:{offers:makeOffers(),accepted:null},event:null,ease:0,map:{name:'',provinces:[]},pos:null,targetLoc:'',destProv:''};
+  return {v:2,title:DEFAULT_TITLE,lore:LORE,roster:roster,fallen:[],grudges:[],history:[],week:1,done:0,phase:'ready',encN:4,bonus:0,burdenBonus:0,kit:{bandage:2,flare:1,stim:1},report:[],m:null,view:'setup',ui:{mode:'cards',open:{},sort:{key:'',dir:1}},mtype:'explore',kind:'unexp',threat:'Outlaws',legs:4,contracts:{offers:makeOffers(),accepted:null},event:null,ease:0,map:{name:'',provinces:[]},pos:null,targetLoc:'',destProv:''};
 }
 function migStats(o){
   /* saves from before the S M I T E remap use the old stat keys */
@@ -759,6 +816,11 @@ function load(){
         if(typeof l.hidden!=='boolean')l.hidden=false;
         if(typeof l.cleared!=='boolean')l.cleared=false;
         if(l.kind==='settle'&&!SETTLE_TYPES[l.settleType])l.settleType=settleTypeRoll(0);
+        if(l.kind==='delve'){
+          if(typeof l.depth!=='number'||l.depth<1)l.depth=1;
+          if(typeof l.final!=='number')l.final=null;
+          if(l.perk&&typeof l.perk!=='object')l.perk=null;
+        }
       });
     });
     {
@@ -773,6 +835,7 @@ function load(){
     }
     if(typeof o.pos!=='string'||!o.map.provinces.some(p=>p.id===o.pos))o.pos=o.map.provinces.length?o.map.provinces[0].id:null;
     if(typeof o.targetLoc!=='string')o.targetLoc='';
+    if(typeof o.burdenBonus!=='number'||o.burdenBonus<0)o.burdenBonus=0;
     if(typeof o.destProv!=='string')o.destProv='';
     return o;
   }catch(e){}
@@ -792,7 +855,7 @@ const live=()=>deployed().filter(x=>x.wound<3);
 const kitN=()=>S.kit.bandage+S.kit.flare+S.kit.stim;
 function capOf(ids){
   const mules=ids.filter(id=>{const x=M(id);return x&&hasClr(x,'mule');}).length;
-  return 2*ids.length+2*mules;
+  return 2*ids.length+2*mules+(S.burdenBonus||0);
 }
 function topGrudge(){let best=null;S.grudges.forEach(g=>{if(!best||g.level>best.level)best=g;});return best;}
 const pool0=(N,g)=>5*N+(g?g.level:0)+S.bonus;
@@ -879,7 +942,15 @@ function objFrom(weights){
 }
 const hookDeck=f=>deck(C.hooks.filter(h=>h.f===f));
 function planMission(type,N,contract){
-  const pi=poolInfo(type,N),P=pi.P,g=pi.g;
+  let delveBonus=0;
+  if(type==='explore'){
+    const preTgt=targetLocation();
+    if(preTgt&&preTgt.loc.kind==='delve'){
+      if(typeof preTgt.loc.depth!=='number'||preTgt.loc.depth<1)preTgt.loc.depth=1;
+      delveBonus=2*(preTgt.loc.depth-1);
+    }
+  }
+  const pi=poolInfo(type,N),P=pi.P+delveBonus,g=pi.g;
   const E=type==='patrol'?2:type==='travel'?clamp(S.legs,3,8):clamp(Math.max(S.encN,minEnc(N,P)),3,6);
   const alloc=allocate(N,P,E);
   const nextTask=deck(C.tasks),anyHook=deck(C.hooks),enc=[];
@@ -894,14 +965,27 @@ function planMission(type,N,contract){
     if(tgt&&tgt.loc.kind==='unexp'){
       const nk=pick(['camp','hide','delve','lair']);
       tgt.loc.kind=nk;tgt.loc.name=locName(nk);K=KINDS[nk];
+      if(nk==='delve'){tgt.loc.depth=1;tgt.loc.final=null;}
     }
     const foe=K.foes?pick(K.foes):'';
     const hd=foe?hookDeck(foe):anyHook,locD=deck(K.locs);
     const place=tgt?(tgt.loc.name+' in '+tgt.prov.name):null;
-    out.title='Explore: '+K.n+(place?' \u2014 '+place:'');out.goal=pick(K.goals);out.foe=foe;
+    let delveDepth=null;
+    if(tgt&&tgt.loc.kind==='delve'){
+      if(typeof tgt.loc.depth!=='number'||tgt.loc.depth<1)tgt.loc.depth=1;
+      if(typeof tgt.loc.final!=='number')tgt.loc.final=null;
+      delveDepth=tgt.loc.depth;
+    }
+    out.title='Explore: '+K.n+(place?' \u2014 '+place:'')+(delveDepth!=null?' \u2014 Depth '+delveDepth:'');out.goal=pick(K.goals);out.foe=foe;
     out.info=[['Location kind',K.n],['Foe',foe||'Mixed forces']];
     if(place)out.info.push(['Where',place]);
+    if(delveDepth!=null)out.info.push(['Delve depth','Level '+delveDepth+(tgt.loc.final!=null?(tgt.loc.final===delveDepth?' \u2014 the bottom, by all signs':' of at least '+tgt.loc.final):' \u2014 how deep it goes is still unknown')]);
     out.tgt=tgt?{prov:tgt.prov.id,loc:tgt.loc.id}:null;
+    if(delveDepth!=null){
+      const weaponBump=1+Math.floor((delveDepth-1)/3),kitItems=1+Math.floor((delveDepth-1)/2),promoChance=Math.min(90,30+delveDepth*15);
+      out.delve={depth:delveDepth,weaponBump:weaponBump,kitItems:kitItems,promoChance:promoChance};
+      out.reward=base+' Success also turns up '+weaponBump+' weapon step'+(weaponBump===1?'':'s')+' for the whole party, '+kitItems+' extra kit item'+(kitItems===1?'':'s')+', and a '+promoChance+'% chance the rider who cleared the most perils is raised a rank. A partial success still turns up some supplies.'+((tgt.loc.final!=null&&tgt.loc.final===delveDepth)?' Clear this level and the delve is done \u2014 the place becomes safe for good.':'');
+    }
     for(let i=0;i<E;i++){
       const fin=i===E-1;
       const obj=fin?pick(K.fin):(K.lead&&i<K.lead.n?objFrom(K.lead.w):objFrom(K.w));
@@ -954,7 +1038,13 @@ function planMission(type,N,contract){
     const goals={traveler:'Ride the patrol route and see who is on the road.',meeting:'Ride the patrol route and hit whoever you meet.',plans:'Ride the patrol route and find out what the enemy is planning.',unexp:'Ride the patrol route and check the ruin someone spotted off the road.'};
     out.goal=goals[kind[0]];
     out.info=[['Patrol result',kind[1]],['Foe',kind[0]==='traveler'?'Wayfarers, and whoever follows them':foe]];
-    if(kind[0]==='plans')out.reward=base+' Enemy Plans also drops your top grudge by 1 on a Success.';
+    const patrolRewards={
+      traveler:' A Success also brings word from the road \u2014 an extra weekly event happens right away.',
+      meeting:' A Success also stirs up trouble \u2014 a random hostile faction\u2019s grudge rises by 1.',
+      plans:' A Success also drops your top grudge by 1.',
+      unexp:' A Success also turns up word of an unmarked place nearby, added to the province.'
+    };
+    out.reward=base+(patrolRewards[kind[0]]||'');
     let e1;
     if(kind[0]==='traveler')e1=mkEnc({kind:'traveler',task:'Wayfarer encounter',loc:roadD(),hook:pick(C.wander),obj:objFrom(TRAV_W),planned:small});
     else if(kind[0]==='meeting')e1=mkEnc({task:'Chance meeting',loc:roadD(),hook:hd(),obj:objFrom({eliminate:60,hunt:40}),planned:alloc[0]||3});
@@ -978,12 +1068,13 @@ function genMission(){
   const pl=planMission(type,N,contract);
   const bonusUsed=S.bonus;S.bonus=0;
   const easeUsed=S.ease||0;S.ease=0;
+  const burdenUsed=S.burdenBonus||0;S.burdenBonus=0;
   if(contract)S.contracts.accepted=null;
   const tk=pick(Object.keys(TRAITS));
   S.m={n:S.done+1,type:type,title:pl.title,info:pl.info,reward:pl.reward,goal:pl.goal,foe:pl.foe,patrolKind:pl.patrolKind,contract:contract,camped:false,
     trait:{k:tk,name:C.traits[tk][0],flavor:C.traits[tk][1],effect:TRAITS[tk]},
     P:pl.P,pool:pl.P,cap:2*N,N0:N,party:ids,burden:cap,items:{bandage:S.kit.bandage,flare:S.kit.flare,stim:S.kit.stim},
-    enc:pl.enc,idx:0,bonusUsed:bonusUsed,easeUsed:easeUsed,manualUsed:{},stalkUsed:{},returning:pl.returning,tgt:pl.tgt||null,destProv:pl.destProv||null};
+    enc:pl.enc,idx:0,bonusUsed:bonusUsed,easeUsed:easeUsed,burdenUsed:burdenUsed,manualUsed:{},stalkUsed:{},returning:pl.returning,tgt:pl.tgt||null,destProv:pl.destProv||null,delve:pl.delve||null};
   S.view='brief';
   render();
 }
@@ -1223,6 +1314,31 @@ function computeDebrief(){
     const g=topGrudge();
     if(g)m.pay.push({k:'grudge',f:g.faction,n:1,t:'The enemy plans are yours. The '+g.faction+' grudge drops from level '+g.level+' to '+(g.level-1>0?'level '+(g.level-1):'nothing')+'.'});
   }
+  if(m.type==='patrol'&&m.patrolKind==='meeting'&&m.result==='Success'){
+    const f=pick(HOSTILE);
+    m.pay.push({k:'grudgeup',f:f,t:'The chance meeting turns hostile. Word spreads, and the '+f+' grudge rises.'});
+  }
+  if(m.type==='patrol'&&m.patrolKind==='unexp'&&m.result==='Success'){
+    m.pay.push({k:'newloc',t:'Word of an unmarked place nearby reaches the company.'});
+  }
+  if(m.type==='patrol'&&m.patrolKind==='traveler'&&m.result==='Success'){
+    const ev=rollEvent();
+    m.pay.push({k:'roadevent',t:'Word from the road: '+ev.n+'. '+ev.lines.join(' ')});
+  }
+  if(m.delve){
+    if(m.result==='Success'){
+      m.pay.push({k:'weapon',n:m.delve.weaponBump,t:'Salvage from the depths: every survivor\u2019s weapon step rises by '+m.delve.weaponBump+'.'});
+      m.pay.push({k:'kit',n:m.delve.kitItems,t:'Supplies recovered: '+m.delve.kitItems+' item'+(m.delve.kitItems===1?'':'s')+' added to the kit.'});
+      const c=live().filter(x=>x.rank<MAX_RANK&&x.mc>0);
+      if(c.length&&d(100)<=m.delve.promoChance){
+        const top=Math.max.apply(null,c.map(x=>x.mc)),mb=pick(c.filter(x=>x.mc===top));
+        m.pay.push({k:'promo',id:mb.id,t:mb.name+' cleared the most perils and is raised to '+RANKS[mb.rank+1]+'.'});
+      }
+    }else if(m.result==='Partial success'){
+      const half=Math.max(1,Math.floor(m.delve.kitItems/2));
+      m.pay.push({k:'kit',n:half,t:'Some supplies are salvaged before pulling back: '+half+' item'+(half===1?'':'s')+' added to the kit.'});
+    }
+  }
 }
 function returnToBase(){
   const mm=S.m,played=mm.enc.filter(e=>e.state!=='pending'&&e.state!=='active');
@@ -1231,11 +1347,28 @@ function returnToBase(){
   (mm.pay||[]).forEach(p=>{
     if(p.k==='promo'){const mb=M(p.id);if(mb&&mb.wound<3&&mb.rank<MAX_RANK)mb.rank++;}
     else if(p.k==='grudge'){const g=S.grudges.filter(x=>x.faction===p.f)[0];if(g){g.level-=p.n;if(g.level<=0)S.grudges=S.grudges.filter(x=>x!==g);}}
+    else if(p.k==='grudgeup'){addGrudge(p.f,0);}
+    else if(p.k==='newloc'){const cp=curProvince();if(cp)cp.locations.push(newLocation('unexp',null,false));}
+    else if(p.k==='weapon'){live().forEach(mb=>{mb.weapon+=p.n;});}
+    else if(p.k==='kit'){for(let i=0;i<p.n;i++){const k=pick(['bandage','flare','stim']);S.kit[k]++;}S.burdenBonus=(S.burdenBonus||0)+p.n;}
   });
   const reached=mm.result==='Success'||mm.result==='Partial success';
   if(mm.tgt){
     const tp=S.map.provinces.find(x=>x.id===mm.tgt.prov),tl=tp&&tp.locations.find(x=>x.id===mm.tgt.loc);
-    if(tl&&reached)tl.cleared=true;
+    if(tl&&tl.kind==='delve'){
+      const attempted=mm.delve?mm.delve.depth:(tl.depth||1);
+      if(tl.final==null&&d(6)===6)tl.final=attempted;
+      if(reached){
+        if(tl.final===attempted){
+          tl.cleared=true;
+          tl.perk={act:'outfit',bonus:2,t:'The old delve has been cleared and made safe. Its salvage keeps the company well-equipped.'};
+        }else{
+          tl.depth=attempted+1;
+        }
+      }
+    }else if(tl&&reached){
+      tl.cleared=true;
+    }
   }
   if(mm.type==='travel'){
     const sights=played.filter(e=>e.kind==='sight'&&e.state==='won').length;
@@ -1344,7 +1477,9 @@ function resolveWeek(){
     }
   });
   stirGrudges(out);
-  S.report=out;S.week++;S.phase='ready';S.contracts.offers=makeOffers();S.event=null;
+  const evLines=S.event?S.event.lines.map((t,i)=>(i===0?'<b>'+esc(S.event.n)+'.</b> ':'')+t):[];
+  if(S.event&&S.history.length)S.history[S.history.length-1].event={n:S.event.n,lines:S.event.lines};
+  S.report=evLines.concat(out);S.week++;S.phase='ready';S.contracts.offers=makeOffers();S.event=null;
   alive().forEach(mb=>{mb.act='rest';mb.astat='';});
   UI.dErr='';
   render();
@@ -1532,12 +1667,12 @@ function vPrepare(){
   let panel='';
   if(type==='explore'){
     panel='<h3>Location kind</h3><div class="chips">'+Object.keys(KINDS).map(k=>'<button class="chip" data-a="kind" data-k="'+k+'" aria-pressed="'+(S.kind===k)+'">'+KINDS[k].n+'<small>'+KINDS[k].d+'</small></button>').join('')+'</div>';
-    const cp=curProvince(),known=cp?cp.locations.filter(l=>!l.hidden&&l.kind===S.kind):[];
+    const cp=curProvince(),known=cp?cp.locations.filter(l=>!l.hidden&&l.kind===S.kind&&!(l.kind==='delve'&&l.cleared)):[];
     if(cp&&known.length){
       if(!known.some(l=>l.id===S.targetLoc))S.targetLoc='';
       panel+='<h3 style="margin-top:14px">Target a known location</h3><div class="chips">'
         +'<button class="chip" data-a="tgtloc" data-id="" aria-pressed="'+(!S.targetLoc)+'">Unspecified<small>Roll a fresh location as usual</small></button>'
-        +known.map(l=>'<button class="chip" data-a="tgtloc" data-id="'+l.id+'" aria-pressed="'+(S.targetLoc===l.id)+'">'+esc(l.name)+'<small>In '+esc(cp.name)+(l.cleared?', already cleared':'')+'</small></button>').join('')
+        +known.map(l=>'<button class="chip" data-a="tgtloc" data-id="'+l.id+'" aria-pressed="'+(S.targetLoc===l.id)+'">'+esc(l.name)+'<small>In '+esc(cp.name)+(l.kind==='delve'?', Depth '+(l.depth||1)+(l.final!=null?' of '+l.final:''):(l.cleared?', already cleared':''))+'</small></button>').join('')
         +'</div>';
     }else if(S.targetLoc)S.targetLoc='';
   }else if(type==='threat'){
@@ -1572,14 +1707,17 @@ function vPrepare(){
   else if(type==='travel')opts='<p class="muted small">Legs: '+S.legs+' (set above).</p>';
   else opts='<p style="margin:4px 0">Encounters</p><div class="step"><button data-a="enc" data-d="-1" aria-label="Fewer encounters"'+(S.encN<=minE?' disabled':'')+'>-</button><output>'+S.encN+'</output><button data-a="enc" data-d="1" aria-label="More encounters"'+(S.encN>=6?' disabled':'')+'>+</button></div>';
   const hist=S.history,recent=hist.slice(-8).reverse();
+  const loreHTML=(S.lore&&S.lore.length)?S.lore.map(t=>'<p style="margin:4px 0">'+esc(t)+'</p>').join(''):'';
   let histHTML='';
-  if(hist.length){
+  if(loreHTML||hist.length){
     const okN=hist.filter(h=>h.result==='Success').length,partN=hist.filter(h=>h.result==='Partial success').length,failN=hist.length-okN-partN;
-    histHTML='<div class="sec"><h2>Campaign history</h2><p class="muted small">'+hist.length+' quest'+(hist.length>1?'s':'')+': '+okN+' success'+(okN===1?'':'es')+(partN?', '+partN+' partial':'')+', '+failN+' failure'+(failN===1?'':'s')+'.</p><ul class="hist">'
-      +recent.map(h=>{
-        const cls=h.result==='Success'?'won':h.result==='Partial success'?'':'lost';
-        return '<li><strong>Quest '+h.n+'</strong>'+(h.title?' <span class="muted small">'+esc(h.title)+'</span>':'')+'<span class="tag '+cls+'">'+esc(h.result)+'</span><br><span class="muted small">'+esc(h.goal)+'</span><br><span class="small">'+h.won+' of '+h.total+' encounters won'+(h.lost.length?'; lost '+h.lost.map(esc).join(', '):'')+'.</span></li>';
-      }).join('')+'</ul>'+(hist.length>recent.length?'<p class="muted small">Showing the latest '+recent.length+' of '+hist.length+'.</p>':'')+'</div>';
+    histHTML='<div class="sec"><h2>Campaign history</h2>'+loreHTML
+      +(hist.length?'<p class="muted small">'+hist.length+' quest'+(hist.length>1?'s':'')+': '+okN+' success'+(okN===1?'':'es')+(partN?', '+partN+' partial':'')+', '+failN+' failure'+(failN===1?'':'s')+'.</p><ul class="hist">'
+        +recent.map(h=>{
+          const cls=h.result==='Success'?'won':h.result==='Partial success'?'':'lost';
+          return '<li><strong>Quest '+h.n+'</strong>'+(h.title?' <span class="muted small">'+esc(h.title)+'</span>':'')+'<span class="tag '+cls+'">'+esc(h.result)+'</span><br><span class="muted small">'+esc(h.goal)+'</span><br><span class="small">'+h.won+' of '+h.total+' encounters won'+(h.lost.length?'; lost '+h.lost.map(esc).join(', '):'')+'.</span>'+(h.event?'<br><span class="muted small"><b>'+esc(h.event.n)+'.</b> '+h.event.lines.map(esc).join(' ')+'</span>':'')+'</li>';
+        }).join('')+'</ul>'+(hist.length>recent.length?'<p class="muted small">Showing the latest '+recent.length+' of '+hist.length+'.</p>':''):'')
+      +'</div>';
   }
   const noGo=N<2||(type==='contract'&&!S.contracts.accepted);
   const lastWeek=S.report.length?'<div class="summary"><h3>Last week</h3>'+S.report.map(t=>'<p style="margin:4px 0">'+t+'</p>').join('')+'</div>':'';
@@ -1588,7 +1726,7 @@ function vPrepare(){
     +'<h3>Quest type</h3><div class="chips">'+typeChips+'</div>'
     +'<div class="sec">'+panel+'</div>'
     +'<div class="sec"><h3>Company</h3><div class="chips">'+(chips||'<p class="muted">No one is left. Recruit from the Company tab.</p>')+'</div></div>'
-    +'<div class="sec"><h3>Provisions</h3><p class="muted small" style="margin:4px 0">Burden: <strong'+(over?' class="bad"':'')+'>'+kitN()+'</strong> of '+cap+' slots (2 per rider, +2 per Packhorse).</p><div class="kit">'+kit+'</div></div>'
+    +'<div class="sec"><h3>Provisions</h3><p class="muted small" style="margin:4px 0">Burden: <strong'+(over?' class="bad"':'')+'>'+kitN()+'</strong> of '+cap+' slots (2 per rider, +2 per Packhorse'+(S.burdenBonus?', + '+S.burdenBonus+' from recovered supplies':'')+').</p><div class="kit">'+kit+'</div></div>'
     +'<div class="sec"><h3>Quest options</h3>'+opts+'<p class="muted small" style="margin-top:8px">'+poolNote+(type==='patrol'?'':' Minimum for this pool: '+minE+'.')+'</p></div>'
     +(S.grudges.length?'<div class="sec"><h3>Returning enemies</h3>'+grudgeList()+'<p class="muted small">Your strongest grudge is the finale of an Explore quest. An Enemy Threat against a faction ends with that faction if it holds a grudge.</p></div>':'')
     +'<div class="row"><button class="main" data-a="gen"'+(noGo?' disabled':'')+'>Generate quest</button><span class="err" role="alert">'+esc(UI.err)+'</span></div>'
@@ -1690,8 +1828,9 @@ function vDowntime(){
       +'<small class="muted">'+ACTS[mb.act][1]+'</small></div>';
   }).join('');
   const event=S.event?'<div class="sec"><h3>'+esc(S.event.n)+'</h3>'+S.event.lines.map(t=>'<p style="margin:4px 0">'+t+'</p>').join('')+'</div>':'';
-  const p=curProvince(),set=curSettlement(),perk=settlePerk();
-  const where=p?'<p class="muted small" style="margin:0 0 10px">At '+esc(p.name)+(set?' \u2014 '+esc(SETTLE_TYPES[set.settleType].n)+(set.size?' ('+set.size+')':''):' \u2014 wilderness, no settlement here')+'.'+(perk?' '+esc(perkBlurb(perk)):'')+'</p>':'';
+  const p=curProvince(),set=curSettlement(),perk=settlePerk(),delvePerks=curDelvePerks();
+  const perkTxt=[perk?perkBlurb(perk):'',...delvePerks.map(perkBlurb)].filter(Boolean).join(' ');
+  const where=p?'<p class="muted small" style="margin:0 0 10px">At '+esc(p.name)+(set?' \u2014 '+esc(SETTLE_TYPES[set.settleType].n)+(set.size?' ('+set.size+')':''):' \u2014 wilderness, no settlement here')+'.'+(perkTxt?' '+esc(perkTxt):'')+'</p>':'';
   return '<div class="col"><h2 style="margin-top:0">At the hold, week '+S.week+'</h2>'+where+'<p class="lede">Spend one week here before the next quest. Each rider takes one action a week. Time is the only cost, and nothing heals unless someone rests.</p>'
     +event
     +(L.length?'<div class="affwrap">'+rows+'</div>':'<p class="muted">No one is left. Recruit from the Company tab.</p>')
@@ -1701,23 +1840,27 @@ function vDowntime(){
 
 /* ---------- the realm view ---------- */
 function vMap(){
-  const R=S.map,addKinds=['camp','hide','delve','lair','unexp'];
+  const R=S.map;
   const nameInput='<div class="camp"><label for="realmInput">Realm</label><input class="title-input" id="realmInput" maxlength="40" value="'+esc(R.name)+'" placeholder="Name this region"></div>';
   if(!R.provinces.length){
-    return '<div class="col"><h2 style="margin-top:0">The Realm</h2><p class="lede">Set up the region your company rides through: a scatter of provinces (Map Areas), each with a settlement or two, and the wild country around them. Survey it at random, or build it by hand.</p>'
+    return '<div class="col"><h2 style="margin-top:0">The Realm</h2><p class="lede">The region your company rides through: a scatter of provinces, each with a settlement or two, and the wild country around them.</p>'
       +nameInput
       +'<div class="row"><button class="main" data-a="survey">Survey the region</button></div></div>';
   }
   const provHTML=R.provinces.map(p=>{
     const here=p.id===S.pos,set=p.locations.find(l=>l.kind==='settle'),other=p.locations.filter(l=>l.kind!=='settle');
-    const rows=other.length?'<ul>'+other.map(l=>{
+    const setLi=set?'<li>'+esc(set.size||'Village')+': <input class="snm" data-prov="'+p.id+'" maxlength="24" value="'+esc(set.name)+'" aria-label="Settlement name">, '+esc(SETTLE_TYPES[set.settleType].n)+'. '+esc(SETTLE_TYPES[set.settleType].t)+'</li>':'';
+    const otherLis=other.map(l=>{
       const K=KINDS[l.kind]||KINDS.unexp;
-      return '<li>'+(l.hidden?'<span class="muted small">Hidden \u2014 not yet found</span>':'<b>'+esc(K.n)+'</b>: '+esc(l.name)+(l.cleared?' <span class="tag won">cleared</span>':''))
+      if(l.hidden)return '<li><span class="muted small">Hidden \u2014 not yet found</span> <button class="lnk" data-a="rmloc" data-prov="'+p.id+'" data-loc="'+l.id+'">remove</button></li>';
+      if(l.kind==='delve'){
+        const depthTxt=l.cleared?'Cleared \u2014 made safe':('Depth '+(l.depth||1)+(l.final!=null?' of '+l.final:' \u2014 depth unknown'));
+        return '<li><b>'+esc(K.n)+'</b>: '+esc(l.name)+' \u2014 '+depthTxt+(l.cleared?' <span class="tag won">safe</span>':'')+' <button class="lnk" data-a="rmloc" data-prov="'+p.id+'" data-loc="'+l.id+'">remove</button></li>';
+      }
+      return '<li><b>'+esc(K.n)+'</b>: '+esc(l.name)+(l.cleared?' <span class="tag won">cleared</span>':'')
         +' <button class="lnk" data-a="rmloc" data-prov="'+p.id+'" data-loc="'+l.id+'">remove</button></li>';
-    }).join('')+'</ul>':'<p class="muted small">Nothing else marked here yet.</p>';
-    const addRow='<div class="row" style="margin:8px 0 0"><select data-add-kind="'+p.id+'" aria-label="Kind of location to add">'+addKinds.map(k=>'<option value="'+k+'">'+KINDS[k].n+'</option>').join('')+'</select>'
-      +'<label class="small" style="display:flex;align-items:center;gap:4px"><input type="checkbox" data-add-hidden="'+p.id+'"> Hidden</label>'
-      +'<button data-a="addloc" data-prov="'+p.id+'">Add location</button></div>';
+    }).join('');
+    const rows=(setLi||otherLis)?'<ul>'+setLi+otherLis+'</ul>':'<p class="muted small">Nothing marked here yet.</p>';
     const othersP=R.provinces.filter(x=>x.id!==p.id);
     const roadsHTML=othersP.length?'<p class="muted small" style="margin:12px 0 4px">Roads to:</p><div class="chips">'+othersP.map(x=>'<button class="chip" data-a="adj" data-a1="'+p.id+'" data-a2="'+x.id+'" aria-pressed="'+((p.adj||[]).indexOf(x.id)>=0)+'">'+esc(x.name)+'</button>').join('')+'</div>':'';
     const rmHTML=UI.rmProv===p.id
@@ -1729,13 +1872,12 @@ function vMap(){
     const dangerHTML='<p class="muted small" style="margin:0 0 8px"><b>'+esc(DANGER_LABELS[p.danger]||'Uneasy')+'</b> (danger '+p.danger+'/5). Restless: '+(p.restless||[]).map(f=>{const gg=S.grudges.filter(x=>x.faction===f)[0];return esc(f)+' ('+(gg?'grudge level '+gg.level:'no grudge')+')';}).join(', ')+'.</p>';
     return '<div class="panel"><h3><input class="title-input pnm" data-prov="'+p.id+'" maxlength="30" value="'+esc(p.name)+'" aria-label="Province name">'+(here?' <span class="tag flag">here</span>':'')+'</h3>'
       +bioHTML+dangerHTML
-      +(set?'<p class="muted small" style="margin:2px 0 2px">Settlement: <input class="title-input snm" data-prov="'+p.id+'" maxlength="24" value="'+esc(set.name)+'" aria-label="Settlement name"></p><p class="muted small" style="margin:0 0 8px">'+esc(SETTLE_TYPES[set.settleType].n)+(set.size?' ('+set.size+')':'')+'. '+esc(SETTLE_TYPES[set.settleType].t)+'</p>'
-        :'<p class="muted small" style="margin:2px 0 8px">Wilderness \u2014 no settlement here.</p>')
-      +rows+addRow+roadsHTML+rmHTML
+      +(set?'':'<p class="muted small" style="margin:2px 0 4px">Wilderness \u2014 no settlement here.</p>')
+      +rows+roadsHTML+rmHTML
       +'</div>';
   }).join('');
   return '<div class="col"><h2 style="margin-top:0">The Realm</h2>'+nameInput
-    +'<p class="lede">Provinces are Map Areas: each holds a settlement (if any) and whatever else has been found there. Mark roads between provinces below \u2014 a Journey\u2019s length follows the roads between here and its destination. Explore can target anything known in the province you\u2019re in.</p>'
+    +'<p class="lede">Provinces are map areas: each holds a settlement (if any) and whatever else has been found there. Mark roads between provinces below \u2014 a Journey\u2019s length follows the roads between here and its destination. Explore can target anything known in the province you\u2019re in.</p>'
     +'<div class="row"><button data-a="survey">Survey another province</button></div>'
     +provHTML+'</div>';
 }
@@ -1769,12 +1911,6 @@ document.addEventListener('click',e=>{
   if(a==='rmprov2'){removeProvince(b.dataset.prov);UI.rmProv=null;return render();}
   if(a==='setpos'){if(S.map.provinces.some(p=>p.id===b.dataset.prov))S.pos=b.dataset.prov;return render();}
   if(a==='rmloc'){removeLocation(b.dataset.prov,b.dataset.loc);return render();}
-  if(a==='addloc'){
-    const pid=b.dataset.prov;
-    const ksel=document.querySelector('[data-add-kind="'+pid+'"]'),hsel=document.querySelector('[data-add-hidden="'+pid+'"]');
-    addLocation(pid,ksel?ksel.value:'unexp',hsel?hsel.checked:false);
-    return render();
-  }
   if(a==='tgtloc'){S.targetLoc=b.dataset.id||'';return render();}
   if(a==='destprov'){
     S.destProv=b.dataset.id||'';
@@ -1794,7 +1930,7 @@ document.addEventListener('click',e=>{
   }
   if(a==='enc'){S.encN+=parseInt(b.dataset.d,10);return render();}
   if(a==='gen')return genMission();
-  if(a==='discard'){S.bonus=S.m.bonusUsed;S.ease=S.m.easeUsed||0;if(S.m.contract)S.contracts.accepted=S.m.contract;S.m=null;S.view='setup';return render();}
+  if(a==='discard'){S.bonus=S.m.bonusUsed;S.ease=S.m.easeUsed||0;S.burdenBonus=S.m.burdenUsed||0;if(S.m.contract)S.contracts.accepted=S.m.contract;S.m=null;S.view='setup';return render();}
   if(a==='mtype'){if(MTYPES[b.dataset.t]){S.mtype=b.dataset.t;UI.err='';}return render();}
   if(a==='kind'){if(KINDS[b.dataset.k]){S.kind=b.dataset.k;S.targetLoc='';}return render();}
   if(a==='threat'){if(HOSTILE.indexOf(b.dataset.f)>=0)S.threat=b.dataset.f;return render();}
