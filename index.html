@@ -1,16 +1,17 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Noonchaser 1.4</title>
+<title>Noonchaser 1.5</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=IM+Fell+English:ital@0;1&family=IM+Fell+English+SC&family=Alegreya+Sans:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
-:root{--bg:#d8dccb;--panel:#e6e9da;--field:#f1f3e8;--ink:#1d2417;--muted:#525c49;--line:#b3baa2;--tallow:#6f4f08;--blood:#8a2b22;--kin:#3d6a2a;--bead1:#dd7563;--bead2:#7a1f17}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#11140e;--panel:#1b2016;--field:#151911;--ink:#e3e0cc;--muted:#a0a58f;--line:#363d2b;--tallow:#e2b04a;--blood:#dc6552;--kin:#9bbd6f;--bead1:#e88a77;--bead2:#8a2b20}}
-:root[data-theme="dark"]{--bg:#11140e;--panel:#1b2016;--field:#151911;--ink:#e3e0cc;--muted:#a0a58f;--line:#363d2b;--tallow:#e2b04a;--blood:#dc6552;--kin:#9bbd6f;--bead1:#e88a77;--bead2:#8a2b20}
+:root{--bg:#d8dccb;--panel:#e6e9da;--field:#f1f3e8;--ink:#1d2417;--muted:#525c49;--line:#b3baa2;--tallow:#6f4f08;--blood:#8a2b22;--kin:#3d6a2a;--bead1:#dd7563;--bead2:#7a1f17;--steel:#4f6272}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#11140e;--panel:#1b2016;--field:#151911;--ink:#e3e0cc;--muted:#a0a58f;--line:#363d2b;--tallow:#e2b04a;--blood:#dc6552;--kin:#9bbd6f;--bead1:#e88a77;--bead2:#8a2b20;--steel:#9db2c6}}
+:root[data-theme="dark"]{--bg:#11140e;--panel:#1b2016;--field:#151911;--ink:#e3e0cc;--muted:#a0a58f;--line:#363d2b;--tallow:#e2b04a;--blood:#dc6552;--kin:#9bbd6f;--bead1:#e88a77;--bead2:#8a2b20;--steel:#9db2c6}
 :root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
 html{scroll-padding-top:env(safe-area-inset-top,0px);-webkit-text-size-adjust:100%}
 *,*::before,*::after{box-sizing:inherit}
@@ -69,6 +70,7 @@ h3{font-size:22px}
 .stw{display:inline-flex;align-items:center;gap:6px}
 .pips{display:inline-flex;gap:3px}
 .pip{width:10px;height:10px;border-radius:2px;background:var(--line)}
+.pipcol{display:inline-flex;flex-direction:column;gap:3px}.pip.a{background:var(--steel);border-radius:1px}.pip.a.x{background:transparent;box-shadow:inset 0 0 0 1.5px var(--steel)}
 .w0 .pip.f{background:var(--kin)}.w1 .pip.f{background:var(--tallow)}.w2 .pip.f{background:var(--blood)}
 .meta{display:flex;flex-wrap:wrap;gap:4px 14px;align-items:center;font-size:15px}
 .note{font-size:14px;color:var(--muted);margin:6px 0 0}
@@ -194,6 +196,18 @@ const WOUNDS=['Hale','Bloodied','Maimed','Slain'];
 const RANKS=['Squire','Yeoman','Man-at-Arms','Serjeant','Knight','Banneret','Castellan','Baron','Earl','Marshal','Champion'];
 const MAX_RANK=RANKS.length-1;
 const ROUND_LIMIT=5, MAX_ROSTER=8, STAT_CAP=18, WOUND_PEN=2;
+const WSTEPS=[[0,0],[1,4],[1,6],[1,8],[1,10],[1,12],[2,6],[2,8],[2,10],[2,12]];
+const WEAPON_MAX=WSTEPS.length-1;
+const BODY_STEP=30;
+const ARMOR_MAX=3;
+const BREEDS=['Mastiff','Wolfhound','Greyhound','Lurcher','Sheepdog','Talbot','Bloodhound','Terrier','Alaunt','Husky'];
+const BIRDS=['Goshawk','Raven','Kestrel','Seagull','Winged Hamster'];
+const PET_NAMES=['Wolf','Hob','Grim','Ash','Bran','Fenn','Nip','Rook','Moss','Cinder','Bess','Gyp','Tuck','Shadow','Barley','Fang','Ember','Dusk'];
+const aStep=v=>Math.max(0,Math.min(ARMOR_MAX,v|0));
+const rk=mb=>mb.pet?(mb.breed||'Hound'):RANKS[mb.rank];
+const aNow=mb=>Math.max(0,Math.min(aStep(mb.armor),mb.ap|0));
+const wStep=v=>Math.max(0,Math.min(WEAPON_MAX,v|0));
+const wLabel=v=>{const w=WSTEPS[wStep(v)];return w[0]===0?'1':(w[0]>1?w[0]:'')+'d'+w[1];};
 const ORDER=['sta','mig','ins','tec','eti'];
 const MSTATS=['sta','mig','tec'];
 const STATN={sta:'Stature',mig:'Might',ins:'Insight',tec:'Technique',eti:'Etiquette'};
@@ -207,6 +221,14 @@ const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
 const uid=()=>Math.random().toString(36).slice(2,9);
 const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const sum=a=>a.reduce((x,y)=>x+y,0);
+function rollWeapon(step,times){
+  const w=WSTEPS[wStep(step)],parts=[];
+  for(let t=0;t<times;t++){
+    if(w[0]===0)parts.push(1);
+    else for(let i=0;i<w[0];i++)parts.push(d(w[1]));
+  }
+  return {tot:sum(parts),parts:parts,plain:w[0]===0};
+}
 function deck(arr){let pool=[];return()=>{if(!pool.length)pool=arr.slice();return pool.splice(rnd(pool.length),1)[0];};}
 
 /* ---------- content ---------- */
@@ -257,7 +279,8 @@ const ACTS={
   infirm:['Abbey infirmary','Heal two wound steps. Needs Abbey Patronage.'],
   train:['Train','Pick Stature, Might or Technique. Roll d20 under 20 minus the stat to raise it by 1.'],
   carouse:['Carouse','Pick Insight or Etiquette. Roll d20 under 20 minus the stat to raise it by 1.'],
-  outfit:['Outfit','Roll d20 under Insight to advance a weapon step. Weapons are not in play yet.'],
+  repair:['Repair armour','Pick your own or a companion\u2019s armour and mend one damaged pip. Armour cannot be repaired during a quest.'],
+  outfit:['Outfit','Pick Weapon or Armour, then roll d20 under Insight to advance it one step. A better weapon slays more enemies for each peril cleared. Each armour step adds a pip that soaks a wound and cannot be healed.'],
   scout:['Scout ahead','Roll d20 under Technique. Success eases the peril pool on the next quest.'],
   forage:['Forage','Roll d20 under Stature. Success brings back a bandage, torch, or draught for the kit.'],
   pray:['Pray','Roll d20 under Insight. Success Blesses this rider: their next wound this campaign turn is shrugged off.'],
@@ -268,7 +291,11 @@ const ASTATS={train:['sta','mig','tec'],carouse:['ins','eti']};
 const EVENTS=[
   {w:4,n:'A quiet week',fx(out){out.push('Nothing needs doing that a good night\u2019s sleep won\u2019t fix.');}},
   {w:4,n:'Fireside boasting',fx(out){out.push('Someone tells the story of an old fight again, bigger every time.');}},
-  {w:5,n:'A stray dog',fx(out){out.push('A stray dog adopts the company. No one has the heart to send it off.');}},
+  {w:20,n:'A loyal stray',fx(out){
+    if(S.roster.length>=MAX_ROSTER){out.push('A stray hangs about the camp, but there is no room for another mouth. It wanders off.');return;}
+    const pet=newPet(S.roster);S.roster.push(pet);
+    out.push('A stray '+esc(pet.breed.toLowerCase())+' adopts the company and answers to '+esc(pet.name)+'. It joins the roster as a companion.');
+  }},
   {w:5,n:'A newcomer lingers',fx(out){out.push('Someone lingers by the gate, sizing the company up. Nothing comes of it, yet.');}},
   {w:5,n:'A scuffle',fx(out){out.push('Old grudges flare up over nothing much. It blows over by morning.');}},
   {w:7,n:'A hot meal',fx(out){
@@ -289,13 +316,13 @@ const EVENTS=[
     out.push(esc(mb.name)+' takes a bad fall in the dark. Nothing fatal, but now '+WOUNDS[mb.wound]+'.');
   }},
   {w:6,n:'A traveling tinker',fx(out){
-    const L=alive();if(!L.length){out.push('No one comes by this week.');return;}
+    const L=alive().filter(x=>!x.pet);if(!L.length){out.push('No one comes by this week.');return;}
     const mb=pick(L),x=roll20(clamp(mb.st.ins,1,19));
-    if(x.ok){mb.weapon++;out.push('A tinker sets up shop. '+esc(mb.name)+' haggles well (rolled '+x.die+' vs '+x.tgt+'). Weapon step '+mb.weapon+'.');}
+    if(x.ok){mb.weapon=wStep(mb.weapon+1);out.push('A tinker sets up shop. '+esc(mb.name)+' haggles well (rolled '+x.die+' vs '+x.tgt+'). Weapon step '+mb.weapon+' ('+wLabel(mb.weapon)+').');}
     else out.push('A tinker sets up shop, but '+esc(mb.name)+' gets nowhere with them (rolled '+x.die+' vs '+x.tgt+').');
   }},
   {w:6,n:'A wandering scholar',fx(out){
-    const L=alive();if(!L.length){out.push('No visitors this week.');return;}
+    const L=alive().filter(x=>!x.pet);if(!L.length){out.push('No visitors this week.');return;}
     const mb=pick(L),k=pick(['ins','eti']);
     if(mb.st[k]>=STAT_CAP){out.push('A scholar passes through, but '+esc(mb.name)+'\u2019s '+STATN[k]+' has nothing left to learn.');return;}
     const x=roll20(clamp(20-mb.st[k],1,19));
@@ -314,7 +341,7 @@ const EVENTS=[
     out.push('A stroke of luck: the '+esc(g.faction)+' ease off. Their grudge falls to level '+g.level+'.');
   }},
   {w:3,n:'An old debt repaid',fx(out){
-    const L=alive().filter(x=>x.rank<MAX_RANK);
+    const L=alive().filter(x=>x.rank<MAX_RANK&&!x.pet);
     if(!L.length){out.push('No one has a debt left to call in.');return;}
     const mb=pick(L),x=roll20(clamp(mb.st.eti,1,19));
     if(x.ok){mb.rank++;out.push('An old debt is called in on '+esc(mb.name)+'\u2019s behalf (rolled '+x.die+' vs '+x.tgt+'). Raised to '+RANKS[mb.rank]+(mb.rank%2===0?', and a boon besides.':'.'));}
@@ -382,7 +409,7 @@ const EVENTS=[
   }}
 ];
 function rollEvent(){const ev=wpick(EVENTS),out=[];ev.fx(out);return {n:ev.n,lines:out};}
-const SORT_DEF={name:1,rank:-1,wound:-1,sta:-1,mig:-1,ins:-1,tec:-1,eti:-1,weapon:-1,need:-1,cleared:-1,clr:-1};
+const SORT_DEF={name:1,rank:-1,wound:-1,sta:-1,mig:-1,ins:-1,tec:-1,eti:-1,weapon:-1,armor:-1,need:-1,cleared:-1,slain:-1,clr:-1};
 const C={
   names:['Cadoc Harl','Elowen Voss','Brannoc','Gwenllian Ash','Aldous Crane','Ysolt Halloran','Bors the Lame','Idris Maddox','Peredur','Brother Rourke','Nest Pruitt','Sutton','Gethin','Wat Brandt','Morwenna Lund','Hollis','Vaughan','Rhosyn Teague','Madoc Danvers','Sabel','Arlo Finch','Emrys Bastable','Lowen','Tamsin Ford'],
   goals:[
@@ -736,11 +763,19 @@ function genStats(){const s={};ORDER.forEach(k=>{s[k]=d(6)+d(6)+d(6);});return s
 function newMember(roster){
   const used=(roster||[]).map(x=>x.name),free=C.names.filter(n=>used.indexOf(n)<0);
   const name=free.length?pick(free):pick(C.names)+' '+d(9);
-  return {id:uid(),name:name,st:genStats(),wound:0,rank:0,weapon:0,cl:[],cleared:0,mc:0,sc:{},act:'rest',astat:'',blessed:false};
+  return {id:uid(),name:name,st:genStats(),wound:0,rank:0,weapon:0,armor:0,ap:0,pet:false,breed:'',cl:[],cleared:0,mc:0,ks:0,kt:0,sc:{},act:'rest',astat:'',blessed:false};
+}
+function newPet(roster){
+  const used=(roster||[]).map(x=>x.name),free=PET_NAMES.filter(n=>used.indexOf(n)<0);
+  const mb=newMember(roster);
+  mb.name=free.length?pick(free):pick(PET_NAMES)+' '+d(9);
+  mb.pet=true;mb.breed=(d(4)===1)?pick(BIRDS):pick(BREEDS);
+  mb.st.ins=0;mb.st.eti=0;
+  return mb;
 }
 function fresh(){
   const roster=[];for(let i=0;i<4;i++)roster.push(newMember(roster));
-  return {v:2,title:DEFAULT_TITLE,lore:LORE,roster:roster,fallen:[],grudges:[],history:[],week:1,done:0,phase:'ready',encN:4,bonus:0,burdenBonus:0,kit:{bandage:2,flare:1,stim:1},report:[],m:null,view:'setup',ui:{mode:'cards',open:{},sort:{key:'',dir:1}},mtype:'explore',kind:'unexp',threat:'Outlaws',legs:4,contracts:{offers:makeOffers(),accepted:null},event:null,ease:0,map:{name:'',provinces:[]},pos:null,targetLoc:'',destProv:''};
+  return {v:2,title:DEFAULT_TITLE,lore:LORE,roster:roster,fallen:[],grudges:[],history:[],week:1,done:0,phase:'ready',encN:4,bonus:0,burdenBonus:0,kit:{bandage:2,flare:1,stim:1},report:[],m:null,view:'setup',ui:{mode:'cards',open:{},sort:{key:'',dir:1}},mtype:'explore',kind:'unexp',threat:'Outlaws',legs:4,contracts:{offers:makeOffers(),accepted:null},event:null,ease:0,map:{name:'',provinces:[]},pos:null,targetLoc:'',destProv:'',bodies:{}};
 }
 function migStats(o){
   /* saves from before the S M I T E remap use the old stat keys */
@@ -762,7 +797,8 @@ function load(){
     o.roster=o.roster.filter(mb=>mb&&mb.st&&ORDER.every(k=>typeof mb.st[k]==='number'));
     o.roster.forEach(mb=>{
       mb.cl=(Array.isArray(mb.cl)?mb.cl:[]).filter(k=>CLR[k]);
-      ['wound','rank','weapon','cleared','mc'].forEach(k=>{if(typeof mb[k]!=='number')mb[k]=0;});
+      ['wound','rank','weapon','cleared','mc','ks','kt'].forEach(k=>{if(typeof mb[k]!=='number')mb[k]=0;});mb.weapon=wStep(mb.weapon);mb.armor=aStep(mb.armor);if(typeof mb.ap!=='number')mb.ap=mb.armor;mb.ap=aNow(mb);
+      if(typeof mb.pet!=='boolean')mb.pet=false;if(typeof mb.breed!=='string')mb.breed='';if(mb.pet){mb.rank=0;mb.weapon=0;mb.cl=[];mb.st.ins=0;mb.st.eti=0;if(!mb.breed)mb.breed='Hound';}
       if(!mb.sc)mb.sc={};if(!mb.act)mb.act='rest';if(!mb.astat)mb.astat='';if(typeof mb.blessed!=='boolean')mb.blessed=false;
       if(typeof mb.name!=='string')mb.name='Recruit';
     });
@@ -837,6 +873,8 @@ function load(){
     if(typeof o.targetLoc!=='string')o.targetLoc='';
     if(typeof o.burdenBonus!=='number'||o.burdenBonus<0)o.burdenBonus=0;
     if(typeof o.destProv!=='string')o.destProv='';
+    if(!o.bodies||typeof o.bodies!=='object'||Array.isArray(o.bodies))o.bodies={};
+    if(o.m&&(!o.m.kills||typeof o.m.kills!=='object'))o.m.kills={};
     return o;
   }catch(e){}
   return null;
@@ -905,6 +943,7 @@ function checkBlessed(mb,lines,intro){
 function autoWound(mb,oo,lines,intro){
   if(oo.st==='sta'&&hasClr(mb,'iron')&&S.m.trait.k!=='pierce'){lines.push({c:'',t:intro+' '+esc(mb.name)+' shrugs it off.'});return;}
   if(checkBlessed(mb,lines,intro))return;
+  if(aNow(mb)>0){mb.ap=aNow(mb)-1;lines.push({c:'',t:intro+' '+esc(mb.name)+'\u2019s armour takes it and is damaged. '+mb.ap+' armour pip'+(mb.ap===1?'':'s')+' left.'});return;}
   mb.wound=Math.min(3,mb.wound+1);
   lines.push({c:'wound',t:intro+' '+(mb.wound===3?esc(mb.name)+' falls and does not get up. (Slain)':esc(mb.name)+' is hurt. ('+WOUNDS[mb.wound]+')')});
 }
@@ -984,7 +1023,7 @@ function planMission(type,N,contract){
     if(delveDepth!=null){
       const weaponBump=1+Math.floor((delveDepth-1)/3),kitItems=1+Math.floor((delveDepth-1)/2),promoChance=Math.min(90,30+delveDepth*15);
       out.delve={depth:delveDepth,weaponBump:weaponBump,kitItems:kitItems,promoChance:promoChance};
-      out.reward=base+' Success also turns up '+weaponBump+' weapon step'+(weaponBump===1?'':'s')+' for the whole party, '+kitItems+' extra kit item'+(kitItems===1?'':'s')+', and a '+promoChance+'% chance the rider who cleared the most perils is raised a rank. A partial success still turns up some supplies.'+((tgt.loc.final!=null&&tgt.loc.final===delveDepth)?' Clear this level and the delve is done \u2014 the place becomes safe for good.':'');
+      out.reward=base+' Success also turns up '+weaponBump+' weapon step'+(weaponBump===1?'':'s')+' for the whole party, '+kitItems+' extra kit item'+(kitItems===1?'':'s')+', and a '+promoChance+'% chance the rider who slew the most enemies is raised a rank. A partial success still turns up some supplies.'+((tgt.loc.final!=null&&tgt.loc.final===delveDepth)?' Clear this level and the delve is done \u2014 the place becomes safe for good.':'');
     }
     for(let i=0;i<E;i++){
       const fin=i===E-1;
@@ -1009,7 +1048,7 @@ function planMission(type,N,contract){
     const T=TASKS[contract.task],hd=hookDeck(contract.foe),locD=deck(C.locs);
     out.title='Commission: '+T.n+' at '+contract.loc;out.goal=contract.text;out.foe=contract.foe;
     out.info=[['Task',T.n],['Location',contract.loc],['Foe',contract.foe]];
-    out.reward=base+' The rider who cleared the most perils is raised one rank on a Success.';
+    out.reward=base+' The rider who slays the most enemies is raised one rank on a Success.';
     for(let i=0;i<E;i++){
       const fin=i===E-1;
       enc.push(mkEnc({task:fin?'Finish the job':nextTask(),loc:fin?contract.loc:locD(),hook:hd(),obj:fin?T.obj:objFrom(null),planned:alloc[i]||0}));
@@ -1064,7 +1103,7 @@ function genMission(){
   const contract=type==='contract'?S.contracts.accepted:null;
   if(type==='contract'&&!contract){UI.err='Accept a commission first.';return render();}
   UI.err='';
-  ids.forEach(id=>{const mb=M(id);mb.mc=0;mb.sc={};});
+  ids.forEach(id=>{const mb=M(id);mb.mc=0;mb.ks=0;mb.sc={};});
   const pl=planMission(type,N,contract);
   const bonusUsed=S.bonus;S.bonus=0;
   const easeUsed=S.ease||0;S.ease=0;
@@ -1074,7 +1113,7 @@ function genMission(){
   S.m={n:S.done+1,type:type,title:pl.title,info:pl.info,reward:pl.reward,goal:pl.goal,foe:pl.foe,patrolKind:pl.patrolKind,contract:contract,camped:false,
     trait:{k:tk,name:C.traits[tk][0],flavor:C.traits[tk][1],effect:TRAITS[tk]},
     P:pl.P,pool:pl.P,cap:2*N,N0:N,party:ids,burden:cap,items:{bandage:S.kit.bandage,flare:S.kit.flare,stim:S.kit.stim},
-    enc:pl.enc,idx:0,bonusUsed:bonusUsed,easeUsed:easeUsed,burdenUsed:burdenUsed,manualUsed:{},stalkUsed:{},returning:pl.returning,tgt:pl.tgt||null,destProv:pl.destProv||null,delve:pl.delve||null};
+    enc:pl.enc,idx:0,bonusUsed:bonusUsed,easeUsed:easeUsed,burdenUsed:burdenUsed,manualUsed:{},stalkUsed:{},kills:{},returning:pl.returning,tgt:pl.tgt||null,destProv:pl.destProv||null,delve:pl.delve||null};
   S.view='brief';
   render();
 }
@@ -1140,7 +1179,7 @@ function playRound(){
   }
 
   /* apply hits */
-  let cleared=0;
+  let cleared=0,slainRound=0;
   rolls.filter(x=>x.ok).sort((a,b)=>a.die-b.die).forEach(h=>{
     if(en.tokens<=0)return;
     if(tk==='armoured'&&!en.armourUsed){
@@ -1155,7 +1194,15 @@ function playRound(){
     }
     if(amt>0){
       en.tokens-=amt;cleared+=amt;h.mb.cleared+=amt;h.mb.mc+=amt;h.mb.sc[oo.st]=(h.mb.sc[oo.st]||0)+amt;
-      lines.push({c:'hit',t:fmt(pick(LN.hit),h.mb.name)+(amt>1?' A perfect blow takes two.':'')});
+      let sl='';
+      if(!neutral(en.hook.f)){
+        const wr=rollWeapon(h.mb.weapon,amt);
+        h.mb.ks+=wr.tot;h.mb.kt+=wr.tot;slainRound+=wr.tot;
+        if(!m.kills)m.kills={};
+        m.kills[en.hook.f]=(m.kills[en.hook.f]||0)+wr.tot;
+        sl=' Slays '+wr.tot+(wr.plain?'':' ('+wr.parts.join('+')+' on '+(amt>1?amt+'x':'')+wLabel(h.mb.weapon)+')')+'.';
+      }
+      lines.push({c:'hit',t:fmt(pick(LN.hit),h.mb.name)+(amt>1?' A perfect blow takes two.':'')+sl});
     }
   });
   if(tk==='regen'&&!en.regenUsed&&cleared>=2&&m.pool>0){
@@ -1174,6 +1221,7 @@ function playRound(){
       const need=woundNeed(mb,f.die,r);
       if(d(20)<=need){
         wounds++;
+        if(aNow(mb)>0){mb.ap=aNow(mb)-1;lines.push({c:'',t:esc(mb.name)+'\u2019s armour takes the blow and is damaged. '+mb.ap+' armour pip'+(mb.ap===1?'':'s')+' left.'});return;}
         mb.wound=Math.min(3,mb.wound+1);
         if(mb.wound===3)lines.push({c:'wound',t:esc(mb.name)+' falls and does not get up. (Slain)'});
         else lines.push({c:'wound',t:fmt(pick(LN.wound),mb.name)+' ('+WOUNDS[mb.wound]+')'});
@@ -1201,7 +1249,7 @@ function playRound(){
   }
   en.last=cleared+drone;
   const dice=STATN[oo.st]+(mod?' ('+(mod>0?'+':'')+mod+')':'')+': '+rolls.map(x=>esc(x.mb.name)+' '+x.die+' vs '+x.tgt+(x.ok?' hit':' miss')+x.note).join(' | ');
-  en.log.push({r:r,cleared:cleared,left:en.tokens,lines:lines,dice:dice});
+  en.log.push({r:r,cleared:cleared,slain:slainRound,left:en.tokens,lines:lines,dice:dice});
   if(!live().length)endEnc('wiped');
   else if(en.tokens<=0)endEnc('won');
   else if(roundLimit(en)&&r>=roundLimit(en))endEnc('timeout');
@@ -1299,15 +1347,21 @@ function computeDebrief(){
     });
   }
   m.pay=[];
+  Object.keys(m.kills||{}).forEach(f=>{
+    const n=m.kills[f];if(!(n>0))return;
+    const before=S.bodies[f]||0,drop=Math.floor((before+n)/BODY_STEP)-Math.floor(before/BODY_STEP),g=S.grudges.filter(x=>x.faction===f)[0];
+    const eff=(g&&drop>0)?Math.min(drop,g.level):0;
+    m.pay.push({k:'bodies',f:f,slain:n,drop:eff,t:'The company slew '+n+' of the '+f+' ('+(before+n)+' in all). '+(eff>0?'Their grudge drops by '+eff+'.':(drop>0?'They hold no grudge to lower.':'Every '+BODY_STEP+' slain lowers their grudge by 1.'))});
+  });
   if(m.type==='threat'&&(m.result==='Success'||m.result==='Partial success')){
     const n=m.result==='Success'?2:1,g=S.grudges.filter(x=>x.faction===m.foe)[0];
     if(g)m.pay.push({k:'grudge',f:g.faction,n:n,t:'The '+g.faction+' grudge drops from level '+g.level+' to '+(g.level-n>0?'level '+(g.level-n):'nothing')+'.'});
   }
   if(m.type==='contract'&&m.result==='Success'){
-    const c=live().filter(x=>x.rank<MAX_RANK&&x.mc>0);
+    const c=live().filter(x=>x.rank<MAX_RANK&&x.ks>0&&!x.pet);
     if(c.length){
-      const top=Math.max.apply(null,c.map(x=>x.mc)),mb=pick(c.filter(x=>x.mc===top));
-      m.pay.push({k:'promo',id:mb.id,t:mb.name+' cleared the most perils and is raised to '+RANKS[mb.rank+1]+'.'});
+      const top=Math.max.apply(null,c.map(x=>x.ks)),mb=pick(c.filter(x=>x.ks===top));
+      m.pay.push({k:'promo',id:mb.id,t:mb.name+' slew the most enemies ('+mb.ks+') and is raised to '+RANKS[mb.rank+1]+'.'});
     }
   }
   if(m.type==='patrol'&&m.patrolKind==='plans'&&m.result==='Success'){
@@ -1329,10 +1383,10 @@ function computeDebrief(){
     if(m.result==='Success'){
       m.pay.push({k:'weapon',n:m.delve.weaponBump,t:'Salvage from the depths: every survivor\u2019s weapon step rises by '+m.delve.weaponBump+'.'});
       m.pay.push({k:'kit',n:m.delve.kitItems,t:'Supplies recovered: '+m.delve.kitItems+' item'+(m.delve.kitItems===1?'':'s')+' added to the kit.'});
-      const c=live().filter(x=>x.rank<MAX_RANK&&x.mc>0);
+      const c=live().filter(x=>x.rank<MAX_RANK&&x.ks>0&&!x.pet);
       if(c.length&&d(100)<=m.delve.promoChance){
-        const top=Math.max.apply(null,c.map(x=>x.mc)),mb=pick(c.filter(x=>x.mc===top));
-        m.pay.push({k:'promo',id:mb.id,t:mb.name+' cleared the most perils and is raised to '+RANKS[mb.rank+1]+'.'});
+        const top=Math.max.apply(null,c.map(x=>x.ks)),mb=pick(c.filter(x=>x.ks===top));
+        m.pay.push({k:'promo',id:mb.id,t:mb.name+' slew the most enemies ('+mb.ks+') and is raised to '+RANKS[mb.rank+1]+'.'});
       }
     }else if(m.result==='Partial success'){
       const half=Math.max(1,Math.floor(m.delve.kitItems/2));
@@ -1347,9 +1401,13 @@ function returnToBase(){
   (mm.pay||[]).forEach(p=>{
     if(p.k==='promo'){const mb=M(p.id);if(mb&&mb.wound<3&&mb.rank<MAX_RANK)mb.rank++;}
     else if(p.k==='grudge'){const g=S.grudges.filter(x=>x.faction===p.f)[0];if(g){g.level-=p.n;if(g.level<=0)S.grudges=S.grudges.filter(x=>x!==g);}}
+    else if(p.k==='bodies'){
+      S.bodies[p.f]=(S.bodies[p.f]||0)+p.slain;
+      if(p.drop>0){const g=S.grudges.filter(x=>x.faction===p.f)[0];if(g){g.level-=p.drop;if(g.level<=0)S.grudges=S.grudges.filter(x=>x!==g);}}
+    }
     else if(p.k==='grudgeup'){addGrudge(p.f,0);}
     else if(p.k==='newloc'){const cp=curProvince();if(cp)cp.locations.push(newLocation('unexp',null,false));}
-    else if(p.k==='weapon'){live().forEach(mb=>{mb.weapon+=p.n;});}
+    else if(p.k==='weapon'){live().filter(x=>!x.pet).forEach(mb=>{mb.weapon=wStep(mb.weapon+p.n);});}
     else if(p.k==='kit'){for(let i=0;i<p.n;i++){const k=pick(['bandage','flare','stim']);S.kit[k]++;}S.burdenBonus=(S.burdenBonus||0)+p.n;}
   });
   const reached=mm.result==='Success'||mm.result==='Partial success';
@@ -1379,7 +1437,7 @@ function returnToBase(){
     if(mm.destProv&&reached)S.pos=mm.destProv;
   }
   S.roster=S.roster.filter(mb=>{
-    if(mb.wound>=3){S.fallen.push({name:mb.name,rank:mb.rank,week:S.week});return false;}
+    if(mb.wound>=3){S.fallen.push({name:mb.name,rank:mb.rank,week:S.week,breed:mb.pet?(mb.breed||'Hound'):''});return false;}
     return true;
   });
   S.roster.forEach(mb=>{mb.blessed=false;});
@@ -1390,15 +1448,33 @@ function returnToBase(){
 
 /* ---------- downtime ---------- */
 function avail(mb){
-  const a=['rest'],perk=settlePerk(),p=curProvince();
+  const perk=settlePerk();
+  if(mb.pet){
+    const a=['rest'];
+    if(perk&&perk.infirm)a.push('infirm');
+    a.push('train','scout','forage');
+    return a;
+  }
+  const a=['rest'],p=curProvince();
   if(hasClr(mb,'insure')||(perk&&perk.infirm))a.push('infirm');
-  a.push('train','carouse','outfit','scout','forage','pray');
+  a.push('train','carouse','outfit');
+  if(repairOpts().length)a.push('repair');
+  a.push('scout','forage','pray');
   if(p&&p.locations.some(l=>l.hidden))a.push('seek');
   if(mb.rank<MAX_RANK)a.push('advance');
   return a;
 }
+function gearOpts(mb){
+  const o=['weapon','armor'];
+  S.roster.filter(x=>x.pet&&x.wound<3).forEach(x=>o.push('armor:'+x.id));
+  return o;
+}
+function repairOpts(){
+  return S.roster.filter(x=>x.wound<3&&aNow(x)<aStep(x.armor)&&(!x.pet||true)).map(x=>x.id);
+}
+function optsFor(mb){return mb.act==='outfit'?gearOpts(mb):mb.act==='repair'?repairOpts():(ASTATS[mb.act]||null);}
 function statKeyFor(mb){
-  const list=ASTATS[mb.act];
+  const list=optsFor(mb);
   if(!list)return '';
   return list.indexOf(mb.astat)>=0?mb.astat:list[0];
 }
@@ -1443,9 +1519,28 @@ function resolveWeek(){
         else out.push(nm+' '+verb+' ('+STATN[k]+', rolled '+x.die+' vs '+x.tgt+'). No progress.');
         break;}
       case 'outfit':{
-        const x=roll20(clamp(mb.st.ins+perkBonus('outfit'),1,19));
-        if(x.ok){mb.weapon++;out.push(nm+' haggles with the armourer (rolled '+x.die+' vs '+x.tgt+'). Weapon step '+mb.weapon+'.');}
-        else out.push(nm+' gets nowhere with the armourer (rolled '+x.die+' vs '+x.tgt+').');
+        const k=statKeyFor(mb);
+        if(k.indexOf('armor')===0){
+          const tgt=k==='armor'?mb:M(k.split(':')[1]);
+          if(!tgt||tgt.wound>=3){out.push(nm+' visits the armourer, but there is no one to fit.');break;}
+          const who=tgt===mb?'':' for '+esc(tgt.name);
+          if(tgt.armor>=ARMOR_MAX){out.push(nm+' asks about armour'+who+', but there is nothing better to be had ('+ARMOR_MAX+' pips).');break;}
+          const x=roll20(clamp(mb.st.ins+perkBonus('outfit'),1,19));
+          if(x.ok){tgt.armor=aStep(tgt.armor+1);tgt.ap=aNow(tgt)+1;tgt.ap=aNow(tgt);out.push(nm+' haggles for armour'+who+' (rolled '+x.die+' vs '+x.tgt+'). Armour step '+tgt.armor+'.');}
+          else out.push(nm+' gets nowhere with the armourer'+who+' (rolled '+x.die+' vs '+x.tgt+').');
+        }else{
+          if(mb.weapon>=WEAPON_MAX){out.push(nm+' visits the armourer but already wields the finest weapon ('+wLabel(WEAPON_MAX)+').');break;}
+          const x=roll20(clamp(mb.st.ins+perkBonus('outfit'),1,19));
+          if(x.ok){mb.weapon=wStep(mb.weapon+1);out.push(nm+' haggles with the armourer (rolled '+x.die+' vs '+x.tgt+'). Weapon step '+mb.weapon+' ('+wLabel(mb.weapon)+').');}
+          else out.push(nm+' gets nowhere with the armourer (rolled '+x.die+' vs '+x.tgt+').');
+        }
+        break;}
+      case 'repair':{
+        const tgt=M(statKeyFor(mb));
+        if(tgt&&tgt.wound<3&&aNow(tgt)<aStep(tgt.armor)){
+          tgt.ap=aNow(tgt)+1;
+          out.push(nm+' spends the week at the forge mending '+(tgt===mb?'their own':esc(tgt.name)+'\u2019s')+' armour. '+tgt.ap+' of '+aStep(tgt.armor)+' pips restored.');
+        }else out.push(nm+' looks over armour that needs no work.');
         break;}
       case 'scout':{
         const x=roll20(clamp(mb.st.tec+perkBonus('scout'),1,19));
@@ -1489,7 +1584,9 @@ function resolveWeek(){
 function status(mb){
   const w=mb.wound;let pips='';
   for(let i=0;i<3;i++)pips+='<span class="pip'+(i<3-w?' f':'')+'"></span>';
-  return '<span class="stw w'+w+'"><span class="pips" aria-hidden="true">'+pips+'</span>'+WOUNDS[w]+'</span>';
+  let ap='';
+  for(let i=0;i<aStep(mb.armor);i++)ap+='<span class="pip a'+(i<aNow(mb)?'':' x')+'"></span>';
+  return '<span class="stw w'+w+'"><span class="pipcol" aria-hidden="true"><span class="pips">'+pips+'</span>'+(ap?'<span class="pips arm">'+ap+'</span>':'')+'</span>'+WOUNDS[w]+(ap?' <span class="muted small">Armour '+aNow(mb)+'/'+aStep(mb.armor)+'</span>':'')+'</span>';
 }
 function beads(live_,total,just,big){
   let h='<div class="beads'+(big?' big':'')+'" role="img" aria-label="'+live_+' of '+total+' Perils remaining">';
@@ -1534,7 +1631,7 @@ function rowHTML(mb,o){
     ?'<input class="nm" data-id="'+mb.id+'" value="'+esc(mb.name)+'" maxlength="24" aria-label="Rider name">'
     :'<span class="who">'+esc(mb.name)+'</span>';
   const head='<div class="cs-h"><button class="tg" data-a="tog" data-id="'+mb.id+'" aria-expanded="'+open+'" aria-label="'+(open?'Collapse ':'Expand ')+esc(mb.name)+'">'+(open?'\u2212':'+')+'</button>'
-    +nameEl+'<span class="rk">'+RANKS[mb.rank]+'</span>'+status(mb)
+    +nameEl+'<span class="rk">'+esc(rk(mb))+'</span>'+status(mb)
     +(need?'<span class="tag need">Needs '+need+' or less</span>':'')
     +((o.edit&&!dead&&pend>0)?'<span class="tag flag">Boon ready</span>':'')+'</div>';
   let body='';
@@ -1549,7 +1646,7 @@ function rowHTML(mb,o){
       ?'<div class="row" style="margin:8px 0 0"><button class="lnk" data-a="rm" data-id="'+mb.id+'"'+(alive().length<=2?' disabled':'')+' aria-label="Remove '+esc(mb.name)+'">Remove</button></div>'
       :'';
     body='<div class="cs-body">'+statBlock(mb,o.hi)
-      +'<div class="meta"><span class="muted">Weapon step '+mb.weapon+'</span>'+(o.edit?'':'<span class="muted">Cleared '+mb.mc+' this quest</span>')+'<span class="muted">Cleared '+mb.cleared+' total</span></div>'
+      +'<div class="meta"><span class="muted">Weapon '+wLabel(mb.weapon)+' (step '+wStep(mb.weapon)+')</span><span class="muted">Armour '+aNow(mb)+' of '+aStep(mb.armor)+' (max '+ARMOR_MAX+')</span>'+(o.edit?'':'<span class="muted">Slain '+mb.ks+' this quest</span>')+'<span class="muted">Slain '+mb.kt+' total</span></div>'
       +clrs+picker+rm+'</div>';
   }
   return '<article class="cs'+(dead?' dead':'')+'" id="card-'+mb.id+'" data-w="'+mb.wound+'">'+head+body+'</article>';
@@ -1560,8 +1657,10 @@ function sortVal(mb,k,o){
     case 'rank':return mb.rank;
     case 'wound':return mb.wound;
     case 'weapon':return mb.weapon;
+    case 'armor':return aNow(mb);
     case 'need':return needOf(mb,o);
     case 'cleared':return o.edit?mb.cleared:mb.mc;
+    case 'slain':return o.edit?mb.kt:mb.ks;
     case 'clr':return mb.cl.length;
     default:return mb.st[k];
   }
@@ -1582,14 +1681,14 @@ function tableHTML(list,o){
   };
   const head='<tr>'+th('name','Rider','','Rider name')+th('rank','Rank','','Rank')+th('wound','Wounds','','Wounds')
     +ORDER.map(k=>th(k,STATN[k].charAt(0),'c'+(k===o.hi?' cur':''),STATN[k])).join('')
-    +th('weapon','Weapon','c','Weapon step')+(showNeed?th('need','Needs','c','Target needed'):'')
-    +th('cleared',o.edit?'Cleared':'This quest','c',o.edit?'Perils cleared':'Perils cleared this quest')+th('clr','Boons','','Number of boons')+'</tr>';
+    +th('weapon','Weapon','c','Weapon step')+th('armor','Armour','c','Armour pips')+(showNeed?th('need','Needs','c','Target needed'):'')
+    +th('slain',o.edit?'Slain':'This quest','c',o.edit?'Enemies slain in total':'Enemies slain this quest')+th('clr','Boons','','Number of boons')+'</tr>';
   const rows=sortedList(list,o,act,sk.dir).map(mb=>{
     const dead=mb.wound>=3,pend=pendOf(mb),nd=needOf(mb,o);
-    return '<tr class="'+(dead?'dead':'')+'" style="--stripe:'+STRIPE[mb.wound]+'"><td><span class="dot"></span><button class="lnk" data-a="jump" data-id="'+mb.id+'">'+esc(mb.name)+'</button></td><td>'+RANKS[mb.rank]+'</td><td>'+status(mb)+'</td>'
+    return '<tr class="'+(dead?'dead':'')+'" style="--stripe:'+STRIPE[mb.wound]+'"><td><span class="dot"></span><button class="lnk" data-a="jump" data-id="'+mb.id+'">'+esc(mb.name)+'</button></td><td>'+esc(rk(mb))+'</td><td>'+status(mb)+'</td>'
       +ORDER.map(k=>'<td class="c num'+(k===o.hi?' cur':'')+'">'+mb.st[k]+adjOf(mb,k)+'</td>').join('')
-      +'<td class="c">'+mb.weapon+'</td>'+(showNeed?'<td class="c">'+(nd?nd:'-')+'</td>':'')
-      +'<td class="c">'+(o.edit?mb.cleared:mb.mc)+'</td>'
+      +'<td class="c" title="Step '+wStep(mb.weapon)+'">'+wLabel(mb.weapon)+'</td><td class="c">'+aNow(mb)+'/'+aStep(mb.armor)+'</td>'+(showNeed?'<td class="c">'+(nd?nd:'-')+'</td>':'')
+      +'<td class="c">'+(o.edit?mb.kt:mb.ks)+'</td>'
       +'<td>'+(mb.cl.length?mb.cl.map(k=>esc(CLR[k].n)).join(', '):'None')+((o.edit&&!dead&&pend>0)?' <span class="tag flag">ready</span>':'')+'</td></tr>';
   }).join('');
   return '<div class="tablewrap"><table><thead>'+head+'</thead><tbody>'+rows+'</tbody></table></div>';
@@ -1604,11 +1703,13 @@ function squadPanel(list,o){
 
 /* ---------- squad tab ---------- */
 function grudgeList(){
-  return S.grudges.length?'<ul>'+S.grudges.map(x=>'<li>'+esc(x.faction)+', level '+x.level+'</li>').join('')+'</ul>':'<p class="muted">None.</p>';
+  const tally=Object.keys(S.bodies||{}).filter(f=>S.bodies[f]>0);
+  const bt=tally.length?'<p class="muted small" style="margin:8px 0 0">Enemies slain so far: '+tally.map(f=>esc(f)+' '+S.bodies[f]+' (next grudge drop at '+((Math.floor(S.bodies[f]/BODY_STEP)+1)*BODY_STEP)+')').join('; ')+'.</p>':'';
+  return (S.grudges.length?'<ul>'+S.grudges.map(x=>'<li>'+esc(x.faction)+', level '+x.level+'</li>').join('')+'</ul>':'<p class="muted">None.</p>')+bt;
 }
 function vSquad(){
   const A=alive();
-  const fallen=S.fallen.length?'<h2>Fallen</h2><p class="lede">'+S.fallen.map(f=>esc(f.name)+', '+RANKS[clamp(f.rank||0,0,MAX_RANK)]+', week '+f.week).join('<br>')+'</p>':'';
+  const fallen=S.fallen.length?'<h2>Fallen</h2><p class="lede">'+S.fallen.map(f=>esc(f.name)+', '+(f.breed?esc(f.breed):RANKS[clamp(f.rank||0,0,MAX_RANK)])+', week '+f.week).join('<br>')+'</p>':'';
   const clrRef=Object.keys(CLR).map(k=>'<li><b>'+esc(CLR[k].n)+'.</b> '+esc(CLR[k].t)+'</li>').join('');
   const reset=UI.confirmReset
     ?'<p>This erases your company, returning enemies and campaign history.</p><div class="row"><button class="warn" data-a="reset2">Erase and start over</button><button data-a="reset0">Keep my campaign</button></div>'
@@ -1621,11 +1722,14 @@ function vSquad(){
     +'<details><summary>Quest types</summary><ul>'
     +'<li><b>Explore.</b> Pick a kind of place: settlement, enemy camp, enemy hideouts, delve, monster lair or unexplored. The kind sets the mix of objectives, the foe and the finale. Your strongest grudge returns as the finale.</li>'
     +'<li><b>Enemy Threat.</b> Pick a faction. The activity, location and end goal are rolled, and the faction is the foe throughout. A Success lowers its grudge by 2 (a partial success by 1).</li>'
-    +'<li><b>Commission.</b> Three offers sit on the notice board and refresh after each week at the hold. Accept one, and its task sets the finale. The rider who clears the most perils on a Success is raised one rank.</li>'
+    +'<li><b>Commission.</b> Three offers sit on the notice board and refresh after each week at the hold. Accept one, and its task sets the finale. The rider who slays the most enemies on a Success is raised one rank.</li>'
     +'<li><b>Journey.</b> A route of 3 to 5 legs. Each leg before the last rolls a wayfarer encounter (Technique, against neutral wayfarers), a defensive battle, or an unexplored location. Wayfarer encounters come first. Falling back or timing out of a wayfarer encounter brings a hostile ambush. Falling back or timing out of a defensive battle ends the journey as a Failure.</li>'
     +'<li><b>Ride Patrol.</b> A short two-encounter quest. One roll picks the first encounter. Enemy Plans also drops your top grudge by 1 on a Success.</li></ul></details>'
     +'<details><summary>How it works</summary><ul>'
     +'<li>Every objective tests one quest stat: Might for slay and hunt, Technique for search, scout and investigate, Stature for fetch and secure. Everyone still up rolls a d20 against it. A 1 clears two Perils, a hit clears one, and a 20 always misses.</li>'
+    +'<li>Weapon steps: 0 is a flat 1, then d4, d6, d8, d10, d12, 2d6, 2d8, 2d10 and 2d12 at step 9, the top. Each time a rider clears a Peril, they roll their weapon dice and slay that many enemies (a perfect blow clears two Perils, so two rolls). Wayfarers are never slain. Every '+BODY_STEP+' enemies slain from a faction lowers its grudge by 1, and the top slayer earns any promotion a quest offers.</li>'
+    +'<li>Companions are loyal animals that join through chance events at the hold. They take a roster and quest slot like a rider, have 0 Insight and 0 Etiquette, and show their breed where a rider shows rank. They never rank up, take boons or use weapons (they always slay 1 per Peril). A rider can spend their own Outfit action to armour a companion, or their Repair armour action to mend its armour.</li>'
+    +'<li>Armour comes from Outfit, one step at a time, up to '+ARMOR_MAX+'. Each step is a pip beside the health pips. When a wound would land, an armour pip is damaged instead. Rest, bandages and the infirmary never touch armour, and it cannot be repaired during a quest. Between quests, a rider\u2019s Repair armour action at the hold mends one pip a week, on their own armour or a companion\u2019s.</li>'
     +'<li>Each wound step takes 2 off the target. Wounds go Hale, Bloodied, Maimed, Slain.</li>'
     +'<li>Every miss risks a wound, worst rolls first (d20 of 4 or less, 6 or less after a 20). Wounds in a round cannot outnumber the hostiles standing at the start of it.</li>'
     +'<li>Burden is 2 slots per rider sent out. Bandages, Torches and Draughts each take one slot. Unused provisions do not carry over.</li>'
@@ -1655,7 +1759,7 @@ function vPrepare(){
   if(type==='explore'||type==='threat'||type==='contract'){if(S.encN<minE)S.encN=minE;if(S.encN>6)S.encN=6;}
   const chips=L.map(mb=>{
     const on=ids.indexOf(mb.id)>=0,pend=Math.floor(mb.rank/2)-mb.cl.length>0;
-    return '<button class="chip" data-a="pick" data-id="'+mb.id+'" aria-pressed="'+on+'">'+esc(mb.name)+'<small>'+RANKS[mb.rank]+', '+WOUNDS[mb.wound]+(pend?', boon ready':'')+'</small></button>';
+    return '<button class="chip" data-a="pick" data-id="'+mb.id+'" aria-pressed="'+on+'">'+esc(mb.name)+'<small>'+esc(rk(mb))+', '+WOUNDS[mb.wound]+(pend?', boon ready':'')+'</small></button>';
   }).join('');
   const over=kitN()>cap;
   const kit=Object.keys(ITEMS).map(k=>
@@ -1769,7 +1873,7 @@ function vEnc(){
   const m=S.m,en=curEnc(),o=objOf(en.obj),active=en.state==='active',fin=isFinale();
   const lim=roundLimit(en),timer=lim?'Timed: round '+(active?en.round+1:en.round)+' of '+lim:'No time limit';
   const log=en.log.slice().reverse().map(r=>
-    '<div class="rd"><h3>Round '+r.r+': '+r.cleared+' cleared, '+r.left+' left</h3>'+r.lines.map(l=>'<p class="'+l.c+'">'+l.t+'</p>').join('')+'<p class="dice">'+r.dice+'</p></div>'
+    '<div class="rd"><h3>Round '+r.r+': '+r.cleared+' cleared, '+r.left+' left'+(r.slain?', '+r.slain+' slain':'')+'</h3>'+r.lines.map(l=>'<p class="'+l.c+'">'+l.t+'</p>').join('')+'<p class="dice">'+r.dice+'</p></div>'
   ).join('');
   let result='';
   if(!active){
@@ -1821,10 +1925,10 @@ function vDowntime(){
   const L=alive();
   L.forEach(mb=>{if(avail(mb).indexOf(mb.act)<0)mb.act='rest';});
   const rows=L.map(mb=>{
-    const list=ASTATS[mb.act];
-    return '<div class="dt"><div class="who">'+esc(mb.name)+'<br><small class="muted">'+RANKS[mb.rank]+', '+WOUNDS[mb.wound]+', Stature '+mb.st.sta+', Might '+mb.st.mig+', Insight '+mb.st.ins+', Technique '+mb.st.tec+', Etiquette '+mb.st.eti+'</small></div>'
+    const list=optsFor(mb);
+    return '<div class="dt"><div class="who">'+esc(mb.name)+'<br><small class="muted">'+esc(rk(mb))+', '+WOUNDS[mb.wound]+', Stature '+mb.st.sta+', Might '+mb.st.mig+', Insight '+mb.st.ins+', Technique '+mb.st.tec+', Etiquette '+mb.st.eti+'</small></div>'
       +'<div class="pick"><select data-act-for="'+mb.id+'" aria-label="Action for '+esc(mb.name)+'">'+avail(mb).map(a=>'<option value="'+a+'"'+(a===mb.act?' selected':'')+'>'+ACTS[a][0]+'</option>').join('')+'</select>'
-      +(list?'<select data-stat-for="'+mb.id+'" aria-label="Stat for '+esc(mb.name)+'">'+list.map(k=>'<option value="'+k+'"'+(k===statKeyFor(mb)?' selected':'')+'>'+STATN[k]+' ('+mb.st[k]+')</option>').join('')+'</select>':'')+'</div>'
+      +(list?'<select data-stat-for="'+mb.id+'" aria-label="Stat for '+esc(mb.name)+'">'+list.map(k=>'<option value="'+k+'"'+(k===statKeyFor(mb)?' selected':'')+'>'+(mb.act==='repair'?(()=>{const q=M(k);return q?(q===mb?'Own armour':'Armour for '+esc(q.name))+' ('+aNow(q)+' of '+aStep(q.armor)+')':'Armour';})():k==='weapon'?'Weapon ('+wLabel(mb.weapon)+')':k==='armor'?'Own armour ('+aStep(mb.armor)+' of '+ARMOR_MAX+')':k.indexOf('armor:')===0?(()=>{const q=M(k.slice(6));return q?'Armour for '+esc(q.name)+' ('+aStep(q.armor)+' of '+ARMOR_MAX+')':'Armour';})():STATN[k]+' ('+mb.st[k]+')')+'</option>').join('')+'</select>':'')+'</div>'
       +'<small class="muted">'+ACTS[mb.act][1]+'</small></div>';
   }).join('');
   const event=S.event?'<div class="sec"><h3>'+esc(S.event.n)+'</h3>'+S.event.lines.map(t=>'<p style="margin:4px 0">'+t+'</p>').join('')+'</div>':'';
@@ -2027,3 +2131,5 @@ render();
 </script>
 </body>
 </html>
+
+</body></html>
