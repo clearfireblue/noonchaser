@@ -4,7 +4,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Noonchaser 1.5</title>
+<title>T2k 1.0</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=IM+Fell+English:ital@0;1&family=IM+Fell+English+SC&family=Alegreya+Sans:wght@400;500;700&display=swap" rel="stylesheet">
@@ -1000,12 +1000,14 @@ function planMission(type,N,contract){
 
   if(type==='explore'){
     let K=KINDS[S.kind]||KINDS.unexp;
+    let kindKey=S.kind||'unexp',wasUnexp=false;
     const tgt=targetLocation();
     if(tgt&&tgt.loc.kind==='unexp'){
-      const nk=pick(['camp','hide','delve','lair']);
-      tgt.loc.kind=nk;tgt.loc.name=locName(nk);K=KINDS[nk];
+      const nk=pick(['camp','hide','delve','lair','settle']);
+      tgt.loc.kind=nk;tgt.loc.name=locName(nk);K=KINDS[nk];kindKey=nk;wasUnexp=true;
       if(nk==='delve'){tgt.loc.depth=1;tgt.loc.final=null;}
     }
+    out.kind=kindKey;out.wasUnexp=wasUnexp;
     const foe=K.foes?pick(K.foes):'';
     const hd=foe?hookDeck(foe):anyHook,locD=deck(K.locs);
     const place=tgt?(tgt.loc.name+' in '+tgt.prov.name):null;
@@ -1020,17 +1022,27 @@ function planMission(type,N,contract){
     if(place)out.info.push(['Where',place]);
     if(delveDepth!=null)out.info.push(['Delve depth','Level '+delveDepth+(tgt.loc.final!=null?(tgt.loc.final===delveDepth?' \u2014 the bottom, by all signs':' of at least '+tgt.loc.final):' \u2014 how deep it goes is still unknown')]);
     out.tgt=tgt?{prov:tgt.prov.id,loc:tgt.loc.id}:null;
-    if(delveDepth!=null){
-      const weaponBump=1+Math.floor((delveDepth-1)/3),kitItems=1+Math.floor((delveDepth-1)/2),promoChance=Math.min(90,30+delveDepth*15);
-      out.delve={depth:delveDepth,weaponBump:weaponBump,kitItems:kitItems,promoChance:promoChance};
-      out.reward=base+' Success also turns up '+weaponBump+' weapon step'+(weaponBump===1?'':'s')+' for the whole party, '+kitItems+' extra kit item'+(kitItems===1?'':'s')+', and a '+promoChance+'% chance the rider who slew the most enemies is raised a rank. A partial success still turns up some supplies.'+((tgt.loc.final!=null&&tgt.loc.final===delveDepth)?' Clear this level and the delve is done \u2014 the place becomes safe for good.':'');
+    if(kindKey==='camp'&&foe){
+      out.reward=base+' This camp is '+foe+' alone \u2014 every kill here counts against them, and their grudge drops by 1 on a Success.';
+    }else if(kindKey==='hide'){
+      out.reward=base+' Success also raises the two riders who slew the most enemies \u2014 first and second \u2014 each one rank.';
+    }else if(kindKey==='lair'){
+      out.doubleSlain=true;
+      out.reward=base+' The den is thick with them \u2014 every kill this mission counts double toward slain totals and grudge.';
+    }else if(delveDepth!=null){
+      const weaponBump=1+Math.floor((delveDepth-1)/3),armorBump=1+Math.floor((delveDepth-1)/4),kitItems=1+Math.floor((delveDepth-1)/2),promoChance=Math.min(90,30+delveDepth*15);
+      const rk=pick(['weapon','armor','promo']);
+      out.delve={depth:delveDepth,kind:rk,weaponBump:weaponBump,armorBump:armorBump,kitItems:kitItems,promoChance:promoChance};
+      const bonusTxt=rk==='weapon'?('every survivor\u2019s weapon step rises by '+weaponBump+'.'):rk==='armor'?('every survivor\u2019s armour step rises by '+armorBump+'.'):('there is a '+promoChance+'% chance the rider who slew the most enemies is raised a rank.');
+      out.reward=base+' Success also turns up '+kitItems+' extra kit item'+(kitItems===1?'':'s')+', and '+bonusTxt+' A partial success still turns up some supplies.'+((tgt.loc.final!=null&&tgt.loc.final===delveDepth)?' Clear this level and the delve is done \u2014 the place becomes safe for good.':'');
     }
+    if(wasUnexp)out.reward+=' Poking around the unknown pays off \u2014 clearing this also turns up word of two more unmarked places nearby, added to the province.';
     for(let i=0;i<E;i++){
       const fin=i===E-1;
       const obj=fin?pick(K.fin):(K.lead&&i<K.lead.n?objFrom(K.lead.w):objFrom(K.w));
-      enc.push(mkEnc({task:fin?'Finish the job':nextTask(),loc:(fin&&place)?place:locD(),hook:(fin&&g)?oldHook(g.faction):hd(),obj:obj,planned:alloc[i]||0}));
+      enc.push(mkEnc({task:fin?'Finish the job':nextTask(),loc:(fin&&place)?place:locD(),hook:(fin&&kindKey==='camp')?hd():((fin&&g)?oldHook(g.faction):hd()),obj:obj,planned:alloc[i]||0}));
     }
-    if(g)out.returning={id:g.id,faction:g.faction,level:g.level};
+    if(g&&!(kindKey==='camp'&&g.faction!==foe))out.returning={id:g.id,faction:g.faction,level:g.level};
   }else if(type==='threat'){
     const fac=S.threat,acts=(fac==='Black hounds'||fac==='Fell beasts')?ANIMAL_ACTS:Object.keys(ACTV);
     const activity=pick(acts),endKey=pick(['break','take','drive']),A=ACTV[activity],EG=ENDG[endKey];
@@ -1113,7 +1125,8 @@ function genMission(){
   S.m={n:S.done+1,type:type,title:pl.title,info:pl.info,reward:pl.reward,goal:pl.goal,foe:pl.foe,patrolKind:pl.patrolKind,contract:contract,camped:false,
     trait:{k:tk,name:C.traits[tk][0],flavor:C.traits[tk][1],effect:TRAITS[tk]},
     P:pl.P,pool:pl.P,cap:2*N,N0:N,party:ids,burden:cap,items:{bandage:S.kit.bandage,flare:S.kit.flare,stim:S.kit.stim},
-    enc:pl.enc,idx:0,bonusUsed:bonusUsed,easeUsed:easeUsed,burdenUsed:burdenUsed,manualUsed:{},stalkUsed:{},kills:{},returning:pl.returning,tgt:pl.tgt||null,destProv:pl.destProv||null,delve:pl.delve||null};
+    enc:pl.enc,idx:0,bonusUsed:bonusUsed,easeUsed:easeUsed,burdenUsed:burdenUsed,manualUsed:{},stalkUsed:{},kills:{},returning:pl.returning,tgt:pl.tgt||null,destProv:pl.destProv||null,delve:pl.delve||null,
+    kind:pl.kind||null,wasUnexp:!!pl.wasUnexp,doubleSlain:!!pl.doubleSlain};
   S.view='brief';
   render();
 }
@@ -1197,10 +1210,11 @@ function playRound(){
       let sl='';
       if(!neutral(en.hook.f)){
         const wr=rollWeapon(h.mb.weapon,amt);
-        h.mb.ks+=wr.tot;h.mb.kt+=wr.tot;slainRound+=wr.tot;
+        const tot=m.doubleSlain?wr.tot*2:wr.tot;
+        h.mb.ks+=tot;h.mb.kt+=tot;slainRound+=tot;
         if(!m.kills)m.kills={};
-        m.kills[en.hook.f]=(m.kills[en.hook.f]||0)+wr.tot;
-        sl=' Slays '+wr.tot+(wr.plain?'':' ('+wr.parts.join('+')+' on '+(amt>1?amt+'x':'')+wLabel(h.mb.weapon)+')')+'.';
+        m.kills[en.hook.f]=(m.kills[en.hook.f]||0)+tot;
+        sl=' Slays '+tot+(wr.plain?'':' ('+wr.parts.join('+')+' on '+(amt>1?amt+'x':'')+wLabel(h.mb.weapon)+')')+(m.doubleSlain?' \u2014 the lair swarms with them, doubled':'')+'.';
       }
       lines.push({c:'hit',t:fmt(pick(LN.hit),h.mb.name)+(amt>1?' A perfect blow takes two.':'')+sl});
     }
@@ -1357,6 +1371,23 @@ function computeDebrief(){
     const n=m.result==='Success'?2:1,g=S.grudges.filter(x=>x.faction===m.foe)[0];
     if(g)m.pay.push({k:'grudge',f:g.faction,n:n,t:'The '+g.faction+' grudge drops from level '+g.level+' to '+(g.level-n>0?'level '+(g.level-n):'nothing')+'.'});
   }
+  if(m.type==='explore'&&m.kind==='camp'&&m.result==='Success'){
+    const g=S.grudges.filter(x=>x.faction===m.foe)[0];
+    if(g)m.pay.push({k:'grudge',f:g.faction,n:1,t:'The camp is broken. The '+g.faction+' grudge drops from level '+g.level+' to '+(g.level-1>0?'level '+(g.level-1):'nothing')+'.'});
+  }
+  if(m.type==='explore'&&m.kind==='hide'&&m.result==='Success'){
+    const pool=live().filter(x=>x.rank<MAX_RANK&&x.ks>0&&!x.pet),chosen=[];
+    for(let i=0;i<2&&pool.length;i++){
+      const top=Math.max.apply(null,pool.map(x=>x.ks)),mb=pick(pool.filter(x=>x.ks===top));
+      chosen.push(mb);pool.splice(pool.indexOf(mb),1);
+    }
+    chosen.forEach((mb,i)=>{
+      m.pay.push({k:'promo',id:mb.id,t:mb.name+' slew the '+(i===0?'most':'second-most')+' enemies ('+mb.ks+') and is raised to '+RANKS[mb.rank+1]+'.'});
+    });
+  }
+  if(m.type==='explore'&&m.wasUnexp&&(m.result==='Success'||m.result==='Partial success')){
+    m.pay.push({k:'newlocs',n:2,t:'Poking around the unknown pays off. Word of two more unmarked places nearby reaches the company.'});
+  }
   if(m.type==='contract'&&m.result==='Success'){
     const c=live().filter(x=>x.rank<MAX_RANK&&x.ks>0&&!x.pet);
     if(c.length){
@@ -1381,12 +1412,17 @@ function computeDebrief(){
   }
   if(m.delve){
     if(m.result==='Success'){
-      m.pay.push({k:'weapon',n:m.delve.weaponBump,t:'Salvage from the depths: every survivor\u2019s weapon step rises by '+m.delve.weaponBump+'.'});
       m.pay.push({k:'kit',n:m.delve.kitItems,t:'Supplies recovered: '+m.delve.kitItems+' item'+(m.delve.kitItems===1?'':'s')+' added to the kit.'});
-      const c=live().filter(x=>x.rank<MAX_RANK&&x.ks>0&&!x.pet);
-      if(c.length&&d(100)<=m.delve.promoChance){
-        const top=Math.max.apply(null,c.map(x=>x.ks)),mb=pick(c.filter(x=>x.ks===top));
-        m.pay.push({k:'promo',id:mb.id,t:mb.name+' slew the most enemies ('+mb.ks+') and is raised to '+RANKS[mb.rank+1]+'.'});
+      if(m.delve.kind==='weapon'){
+        m.pay.push({k:'weapon',n:m.delve.weaponBump,t:'Salvage from the depths: every survivor\u2019s weapon step rises by '+m.delve.weaponBump+'.'});
+      }else if(m.delve.kind==='armor'){
+        m.pay.push({k:'armor',n:m.delve.armorBump,t:'Salvage from the depths: every survivor\u2019s armour step rises by '+m.delve.armorBump+'.'});
+      }else{
+        const c=live().filter(x=>x.rank<MAX_RANK&&x.ks>0&&!x.pet);
+        if(c.length&&d(100)<=m.delve.promoChance){
+          const top=Math.max.apply(null,c.map(x=>x.ks)),mb=pick(c.filter(x=>x.ks===top));
+          m.pay.push({k:'promo',id:mb.id,t:mb.name+' slew the most enemies ('+mb.ks+') and is raised to '+RANKS[mb.rank+1]+'.'});
+        }
       }
     }else if(m.result==='Partial success'){
       const half=Math.max(1,Math.floor(m.delve.kitItems/2));
@@ -1407,7 +1443,9 @@ function returnToBase(){
     }
     else if(p.k==='grudgeup'){addGrudge(p.f,0);}
     else if(p.k==='newloc'){const cp=curProvince();if(cp)cp.locations.push(newLocation('unexp',null,false));}
+    else if(p.k==='newlocs'){const cp=curProvince();if(cp){for(let i=0;i<p.n;i++)cp.locations.push(newLocation('unexp',null,false));}}
     else if(p.k==='weapon'){live().filter(x=>!x.pet).forEach(mb=>{mb.weapon=wStep(mb.weapon+p.n);});}
+    else if(p.k==='armor'){live().filter(x=>!x.pet).forEach(mb=>{const newMax=aStep(mb.armor+p.n),gained=newMax-mb.armor;mb.ap=(mb.ap||0)+gained;mb.armor=newMax;});}
     else if(p.k==='kit'){for(let i=0;i<p.n;i++){const k=pick(['bandage','flare','stim']);S.kit[k]++;}S.burdenBonus=(S.burdenBonus||0)+p.n;}
   });
   const reached=mm.result==='Success'||mm.result==='Partial success';
@@ -1477,6 +1515,11 @@ function statKeyFor(mb){
   const list=optsFor(mb);
   if(!list)return '';
   return list.indexOf(mb.astat)>=0?mb.astat:list[0];
+}
+function weeklyThreatRoll(){
+  S.grudges.forEach(g=>{
+    if(d(6)===6)g.level=Math.min(3,g.level+1);
+  });
 }
 function stirGrudges(out){
   const provs=[],cp=curProvince();
@@ -1571,6 +1614,7 @@ function resolveWeek(){
         break;}
     }
   });
+  weeklyThreatRoll();
   stirGrudges(out);
   const evLines=S.event?S.event.lines.map((t,i)=>(i===0?'<b>'+esc(S.event.n)+'.</b> ':'')+t):[];
   if(S.event&&S.history.length)S.history[S.history.length-1].event={n:S.event.n,lines:S.event.lines};
@@ -2132,4 +2176,5 @@ render();
 </body>
 </html>
 
+</body></html>
 </body></html>
