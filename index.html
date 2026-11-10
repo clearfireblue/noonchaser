@@ -818,7 +818,7 @@ function kitMigrate(){
 /* tier tables from the plan */
 const TIER_PTS=[[0,0,0],[2,3,4],[4,6,8],[6,9,12]];
 const FEE=[t=>0,dd=>6+2*dd,dd=>12+4*dd,dd=>20+10*dd];
-const TIER_WEAPON=[0,1,2,3], TIER_ARMOR=[0,0,1,1];
+const SWAY_CAP=10, TIER_WEAPON=[0,1,2,3], TIER_ARMOR=[0,0,1,1];
 const TIER_ODDS=[[[0,40],[1,50],[2,10]],[[1,50],[2,40],[3,10]],[[1,20],[2,50],[3,30]]];
 /* ransom: twice the captive's highest stat */
 const ransomOf=r=>Math.ceil(2*Math.max(...STATS.map(k=>r.st[k]))*(r.ransomX||1));
@@ -981,7 +981,7 @@ function finish(){
     const champ=VV&&VV.champion&&grade==='full';
     S.recruits={diff:q.diff,cands:makeCandidates(q.diff,grade==='partial',S.betterEnlist,champ?3:undefined).concat(S.recruits?S.recruits.cands:[])};
     if(champ) out.notes.push('The melee’s winner draws a Champion to your banner.');
-    if(S.sway){out.notes.push('The tavern talk worked: each candidate has +'+S.sway+' bonus point'+(S.sway>1?'s':'')+'.');S.sway=0;}
+    if(S.sway){const u=Math.min(S.sway,SWAY_CAP);S.sway-=u;out.notes.push('The tavern talk worked: each candidate has +'+u+' bonus point'+(u>1?'s':'')+'.'+(S.sway?' '+S.sway+' banked for the next Enlist.':''));}
     if(S.betterEnlist){out.notes.push('Your renown draws a better crowd: one tier better.');S.betterEnlist=false;}
     if(S.map&&cur().settle.fair){cur().settle.fair=false;out.notes.push('The hiring fair brings better hands: one tier better.');}
     out.notes.push('Three candidates want to ride with you.');
@@ -1009,7 +1009,7 @@ function makeCandidates(diff,partial,better,force){
     if(S.map&&cur().settle.fair) tier=Math.min(3,tier+1);
     if(i===0&&force!==undefined) tier=force;
     const r=newRider(tier,taken); taken.add(r.name);
-    let pts=TIER_PTS[tier][diff]+(S.sway||0);
+    let pts=TIER_PTS[tier][diff]+Math.min(S.sway||0,SWAY_CAP);
     while(pts>0){const open=STATS.filter(k=>r.st[k]<STAT_CAP);if(!open.length)break;r.st[pick(open)]++;pts--;}
     r.weapon=TIER_WEAPON[tier]; r.armor=TIER_ARMOR[tier]; nameGear(r);
     if(tier===2) r.relics.push('R'+(9+rnd(8)));
@@ -2583,7 +2583,7 @@ function viewMarket(){
   const bf=perk()==='frontier'?2:1, noBl=!!(st.noBless&&st.noBless>S.week), mon=perk()==='monastery'&&!noBl;
   const blessOpts='<option value="">Bless…</option>'+S.riders.filter(r=>!r.blessed).map(r=>'<option value="'+r.id+'">'+esc(r.name)+'</option>').join('');
   h+='<div class="panel" style="margin-bottom:16px"><h3>Band actions</h3><p class="small muted">Each once a week.</p><ul class="wares">'+
-    '<li class="ware"><span><b class="fell">Carouse</b><small>Sway recruits: the next Enlist’s candidates get +'+bf+' bonus point'+(bf>1?'s':'')+' each.'+(S.sway?' (Already swayed: +'+S.sway+'.)':'')+' One rider leads the revels, and may hear about it later.</small></span>'+(A.carouse?'<button disabled>Done this week</button>':'<select id="actCarouse" aria-label="Carouse, led by"'+(S.gold<10?' disabled':'')+'><option value="">Carouse (10 gold), led by…</option>'+S.riders.filter(r=>!busy(r)).map(r=>'<option value="'+r.id+'">'+esc(r.name)+'</option>').join('')+'</select>')+'</li>'+
+    '<li class="ware"><span><b class="fell">Carouse</b><small>Sway recruits: banks +'+bf+' bonus point'+(bf>1?'s':'')+'. Each Enlist gives every candidate up to '+SWAY_CAP+' banked points and keeps the rest.'+(S.sway?' (Banked: '+S.sway+'.)':'')+' One rider leads the revels, and may hear about it later.</small></span>'+(A.carouse?'<button disabled>Done this week</button>':'<select id="actCarouse" aria-label="Carouse, led by"'+(S.gold<10?' disabled':'')+'><option value="">Carouse (10 gold), led by…</option>'+S.riders.filter(r=>!busy(r)).map(r=>'<option value="'+r.id+'">'+esc(r.name)+'</option>').join('')+'</select>')+'</li>'+
     '<li class="ware"><span><b class="fell">Seek rumors</b><small>Uncovers a hidden site: a Delve or Retrieve quest on this week’s board with a guaranteed relic on a full success'+(perk()==='port'?' (you pick it from 3 here)':'')+'.</small></span><button id="actRumor"'+(A.rumor||S.gold<10||S.board.taken||S.travelling?' disabled':'')+'>'+(A.rumor?'Done this week':S.board.taken?'Quest already taken':'Seek rumors (10 gold)')+'</button></li>'+
     '<li class="ware"><span><b class="fell">Bless</b><small>'+(mon?'Free, at the Monastery only. The next time the blessed rider would die, they pass the survival roll.':noBl?'The shrine was despoiled: no Bless here until week '+st.noBless+'.':'Only at a Monastery.')+'</small></span>'+(mon?(A.bless?'<button disabled>Done this week</button>':'<select id="actBless" aria-label="Bless a rider">'+blessOpts+'</select>'):'<button disabled>Not here</button>')+'</li></ul></div>';
   if(st.seized) h+='<div class="panel empty" style="margin-bottom:12px">'+esc(cap1((facById(st.seized)||{name:'Raiders'}).name))+' hold '+esc(st.name)+'. The market is shut until a Defend quest retakes it.</div>';
@@ -2602,7 +2602,7 @@ function bindMarket(V){
   V.querySelectorAll('[data-free]').forEach(b=>b.onclick=()=>{const it=S.stash.find(x=>x.id===b.dataset.free);if(!it)return;confirmBox('Let the '+itemName(it).toLowerCase()+' go? You get nothing for it.','Let it go',()=>{S.stash=S.stash.filter(x=>x!==it);persist();render();toast('The '+itemName(it).toLowerCase()+' wanders off.');});});
   V.querySelectorAll('[data-sell]').forEach(b=>b.onclick=()=>{const it=S.stash.find(x=>x.id===b.dataset.sell);if(!it)return;const c=sellPrice(it);confirmBox('Sell '+itemName(it)+' for '+c+' gold?','Sell',()=>{S.stash=S.stash.filter(x=>x!==it);S.gold+=c;persist();render();toast('Sold for '+c+' gold.');});});
   V.querySelectorAll('[data-give]').forEach(sel=>sel.onchange=()=>{const r=rider(sel.value);if(!r||busy(r))return;const it=S.stash.find(x=>x.id===sel.dataset.give);equip(r,sel.dataset.give);persist();render();toast(r.name+' takes '+(it?itemName(it):'it')+'.');});
-  const c=$('#actCarouse'); if(c) c.onchange=()=>{const A=acts(),lr=rider(c.value);if(!lr||A.carouse||S.gold<10)return;S.gold-=10;A.carouse=true;lr.caroused=(lr.caroused||0)+1;lr.carousedAt=(lr.carousedAt||[]).concat(S.week);carouseRoll(lr);const n=(perk()==='frontier'?2:1)+(trade(lr)==='innkeeper'?3:0);S.sway=Math.max(S.sway||0,n);chron([lr.name+' leads the band in carousing at '+cur().settle.name+'. Word spreads to would-be recruits.']);persist();render();toast('The next Enlist’s candidates get +'+S.sway+' bonus point'+(S.sway>1?'s':'')+'.');};
+  const c=$('#actCarouse'); if(c) c.onchange=()=>{const A=acts(),lr=rider(c.value);if(!lr||A.carouse||S.gold<10)return;S.gold-=10;A.carouse=true;lr.caroused=(lr.caroused||0)+1;lr.carousedAt=(lr.carousedAt||[]).concat(S.week);carouseRoll(lr);const n=(perk()==='frontier'?2:1)+(trade(lr)==='innkeeper'?3:0);S.sway=(S.sway||0)+n;chron([lr.name+' leads the band in carousing at '+cur().settle.name+'. Word spreads to would-be recruits.']);persist();render();toast('Sway banked: '+S.sway+' point'+(S.sway>1?'s':'')+'. The next Enlist uses up to '+SWAY_CAP+' per candidate.');};
   const ru=$('#actRumor'); if(ru) ru.onclick=()=>{const A=acts();if(A.rumor||S.gold<10||S.board.taken)return;S.gold-=10;A.rumor=true;
     const type=pick(['delve','retrieve']), o=makeOffer(type), place=pick(type==='delve'?['a forgotten cellar','a sealed tomb','a drowned chapel','a smugglers’ cave']:['a dead man’s cache','a hidden reliquary','a bandit’s buried hoard','a hermit’s strongbox']);
     o.prov=cur().id; o.hidden=true; o.title='Hidden site: '+(type==='delve'?'delve into ':'retrieve ')+place+' near '+cur().settle.name;
