@@ -1,0 +1,9 @@
+{
+  "name": "Noonchaser",
+  "short_name": "Noonchaser",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#11140e",
+  "theme_color": "#11140e"
+}
